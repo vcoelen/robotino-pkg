@@ -1,7 +1,12 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(robotino_msgs)
 
-find_package(catkin REQUIRED COMPONENTS geometry_msgs std_msgs message_generation roscpp roslib)
+find_package(catkin REQUIRED COMPONENTS 
+	geometry_msgs 
+	std_msgs 
+	message_generation 
+	roscpp 
+	roslib)
 
 add_message_files(
 	FILES
@@ -34,6 +39,8 @@ generate_messages(
 	geometry_msgs 
 )
 
+catkin_package(
+  CATKIN_DEPENDS message_runtime)
 
 #common commands for building c++ executables and libraries
 #rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
