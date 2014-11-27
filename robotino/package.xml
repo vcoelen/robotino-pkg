@@ -1,0 +1,32 @@
+<package>
+  <name>robotino</name>
+  <version>1.0.0</version>
+  <description>ROS metapackage for robotino</description>
+  <maintainer email="tianlan.shao@tum.de">Tianlan Shao</maintainer>
+  <license>BSD</license>
+
+  <url>http://ros.org/wiki/robotino</url>
+
+  <author>indorewala@servicerobotics.eu</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>roscpp</run_depend>
+  <run_depend>rospy</run_depend>
+
+  <run_depend>ros</run_depend>
+  <run_depend>ros_comm</run_depend>
+  <run_depend>common_msgs</run_depend>
+  <run_depend>geometry</run_depend> 
+  <run_depend>robotino_msgs</run_depend>
+  <run_depend>robotino_node</run_depend>
+  <run_depend>robotino_safety</run_depend>
+  <run_depend>robotino_local_move</run_depend>
+  <run_depend>robotino_local_planner</run_depend>
+  <run_depend>robotino_teleop</run_depend>
+  <run_depend>robotino_navigation</run_depend>
+
+  <export>
+    <metapackage/>
+  </export>
+</package>

@@ -1,0 +1,30 @@
+<package>
+  <name>robotino_node</name>
+  <version>1.0.0</version>
+  <description>
+Implements a node which reads sensor data from Robotino and broadcasts it. 
+It also implements a few services.
+  </description>
+  <maintainer email="tianlan.shao@tum.de">Tianlan Shao</maintainer>
+  <author>indorewala@servicerobotics.eu</author>
+  <license>BSD</license>
+  <url>http://ros.org/wiki/robotino_node</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>robotino_msgs</build_depend>
+  <build_depend>nav_msgs</build_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>image_transport</build_depend>
+  <build_depend>pcl</build_depend>
+  <build_depend>pcl_ros</build_depend>
+
+  <run_depend>robotino_msgs</run_depend>
+  <run_depend>nav_msgs</run_depend>
+  <run_depend>tf</run_depend>
+  <run_depend>image_transport</run_depend>
+  <run_depend>pcl</run_depend>
+  <run_depend>pcl_ros</run_depend>
+</package>
+
+

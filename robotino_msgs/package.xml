@@ -1,0 +1,16 @@
+<package>
+  <name>robotino_msgs</name>
+  <version>1.0.0</version>
+  <description>
+This package defines certain custom messages for Robotino.
+  </description>
+  <maintainer email="tianlan.shao@tum.de">Tianlan Shao</maintainer>
+  <author>indorewala@servicerobotics.eu</author>
+  <license>BSD</license>
+  <url>http://ros.org/wiki/robotino_msgs</url>
+
+  <run_depend>roscpp</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+</package>
+
+

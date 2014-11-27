@@ -1,0 +1,22 @@
+<package>
+ <name>robotino_teleop</name>
+  <version>1.0.0</version>
+  <description>
+Implements nodes to control Robotino using a joystick or a keyboard.
+  </description>
+  <maintainer email="tianlan.shao@tum.de">Tianlan Shao</maintainer>
+  <author>indorewala@servicerobotics.eu</author>
+  <license>BSD</license>
+  <url>http://ros.org/wiki/robotino_teleop</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>robotino_node</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+
+ <run_depend>robotino_node</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+</package>
+
+
