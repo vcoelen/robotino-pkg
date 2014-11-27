@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(robotino_teleop)
 
-find_package(catkin REQUIRED COMPONENTS roscpp roslib)
+find_package(catkin REQUIRED COMPONENTS roscpp roslib robotino_node)
 
 find_package(RobotinoAPI2)
 
@@ -18,6 +18,8 @@ add_executable(
 	src/joystick_teleop_node.cpp
 	src/JoystickTeleop.cpp)
 
+add_dependencies(joystick_teleop_node ${catkin_EXPORTED_TARGETS})
+
 target_link_libraries(
   joystick_teleop_node 
   ${REC_ROBOTINO_API2_LIBRARY}
@@ -28,6 +30,8 @@ add_executable(
 	keyboard_teleop_node 
 	src/keyboard_teleop_node.cpp
 	src/KeyboardTeleop.cpp)
+
+add_dependencies(keyboard_teleop_node ${catkin_EXPORTED_TARGETS})
 
 target_link_libraries(
   keyboard_teleop_node
