@@ -11,7 +11,7 @@ find_package(OpenCV REQUIRED)
 find_package(PCL 1.2 REQUIRED)
 
 find_package(catkin REQUIRED COMPONENTS 
-geometry_msgs std_msgs message_generation roscpp roslib OpenCV cv_bridge tf image_transport)
+geometry_msgs std_msgs message_generation roscpp roslib OpenCV cv_bridge tf image_transport robotino_msgs)
 
 find_package(RobotinoAPI2)
 
@@ -52,6 +52,8 @@ add_executable(
   src/RobotinoNode.cpp
 )
 
+add_dependencies(robotino_node ${catkin_EXPORTED_TARGETS})
+
 target_link_libraries(
  	robotino_node
   	${REC_ROBOTINO_API2_LIBRARY}
@@ -67,6 +69,9 @@ add_executable(
   src/RobotinoOdometryNode.cpp
 )
 
+
+add_dependencies(robotino_odometry_node ${catkin_EXPORTED_TARGETS})
+
 target_link_libraries(
   robotino_odometry_node
   ${REC_ROBOTINO_API2_LIBRARY}
@@ -81,6 +86,8 @@ add_executable(
   src/RobotinoLaserRangeFinderNode.cpp
 )
 
+add_dependencies(robotino_laserrangefinder_node ${catkin_EXPORTED_TARGETS})
+
 target_link_libraries(
   robotino_laserrangefinder_node
   ${REC_ROBOTINO_API2_LIBRARY}
@@ -94,6 +101,8 @@ add_executable(
   src/CameraROS.cpp
   src/RobotinoCameraNode.cpp
 )
+
+add_dependencies(robotino_camera_node ${catkin_EXPORTED_TARGETS})
 
 target_link_libraries(
   robotino_camera_node
@@ -110,6 +119,8 @@ add_executable(
   src/NavGoalROS.cpp
   src/ComROS.cpp
 )
+
+add_dependencies(robotino_mapping_node ${catkin_EXPORTED_TARGETS})
 
 target_link_libraries(
   robotino_mapping_node
