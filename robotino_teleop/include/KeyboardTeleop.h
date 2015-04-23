@@ -18,13 +18,15 @@
 #include <termios.h>
 #include "boost/thread/mutex.hpp"
 
-#define KEYCODE_A 0x61
-#define KEYCODE_D 0x64
-#define KEYCODE_S 0x73
-#define KEYCODE_W 0x77
-
+#define KEYCODE_Z 0x7A
 #define KEYCODE_Q 0x71
+#define KEYCODE_S 0x73
+#define KEYCODE_D 0x64
+
+#define KEYCODE_A 0x61
 #define KEYCODE_E 0x65
+ 
+#define KEYCODE_W 0x77
 
 #define KEYCODE_SPACE 0x20
 
