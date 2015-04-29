@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(robotino_safety)
 
-find_package(catkin REQUIRED COMPONENTS roscpp roslib laser_geometry tf robotino_node)
+find_package(catkin REQUIRED COMPONENTS roscpp roslib laser_geometry tf robotino_node cmake_modules)
 find_package(RobotinoAPI2)
 
 find_package(Eigen REQUIRED)
@@ -20,14 +20,14 @@ include_directories(include
 )
 
 add_executable(
-  robotino_safety_node 
+  robotino_safety_node
   src/RobotinoSafety.cpp
   src/robotino_safety_node.cpp)
 
 add_dependencies(robotino_safety_node ${catkin_EXPORTED_TARGETS})
 
 target_link_libraries(
-  robotino_safety_node 
+  robotino_safety_node
   ${REC_ROBOTINO_API2_LIBRARY}
   ${catkin_LIBRARIES}
 )
