@@ -1,11 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(robotino_node)
 
-set(
-  CMAKE_MODULE_PATH
-  /usr/local/robotino/api2/cmake
-)
-
 find_package(OpenCV REQUIRED)
 
 find_package(PCL 1.2 REQUIRED)
@@ -13,7 +8,12 @@ find_package(PCL 1.2 REQUIRED)
 find_package(catkin REQUIRED COMPONENTS 
 geometry_msgs std_msgs message_generation roscpp roslib OpenCV cv_bridge tf image_transport robotino_msgs)
 
-find_package(RobotinoAPI2)
+# Attention, modif à faire après TOUS les find_package()
+set(
+  CMAKE_MODULE_PATH
+  /usr/local/robotino/api2/cmake
+)
+find_package(RobotinoAPI2 REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include
@@ -25,6 +25,7 @@ add_definitions(${PCL_DEFINITIONS})
 
 include_directories(include
   ${catkin_INCLUDE_DIRS}
+  ${REC_ROBOTINO_API2_INCLUDE_DIRS}
 )
 
 

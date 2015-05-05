@@ -2,9 +2,15 @@ cmake_minimum_required(VERSION 2.8.3)
 project(robotino_safety)
 
 find_package(catkin REQUIRED COMPONENTS roscpp roslib laser_geometry tf robotino_node cmake_modules)
-find_package(RobotinoAPI2)
 
 find_package(Eigen REQUIRED)
+
+# Attention, modif à faire après TOUS les find_package()
+set(
+  CMAKE_MODULE_PATH
+  /usr/local/robotino/api2/cmake
+)
+find_package(RobotinoAPI2 REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include
@@ -17,6 +23,7 @@ add_definitions(${EIGEN_DEFINITIONS})
 include_directories(include
   ${catkin_INCLUDE_DIRS}
   ${laser_geometry_INCLUDE_DIRS}
+  ${REC_ROBOTINO_API2_INCLUDE_DIRS}
 )
 
 add_executable(
