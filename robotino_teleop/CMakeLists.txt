@@ -3,7 +3,12 @@ project(robotino_teleop)
 
 find_package(catkin REQUIRED COMPONENTS roscpp roslib robotino_node)
 
-find_package(RobotinoAPI2)
+# Attention, modif à faire après TOUS les find_package()
+set(
+  CMAKE_MODULE_PATH
+  /usr/local/robotino/api2/cmake
+)
+find_package(RobotinoAPI2 REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include
@@ -11,6 +16,7 @@ catkin_package(
 
 include_directories(include
   ${catkin_INCLUDE_DIRS}
+  ${REC_ROBOTINO_API2_INCLUDE_DIRS}
 )
 
 add_executable(

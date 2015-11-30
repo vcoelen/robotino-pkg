@@ -54,8 +54,8 @@ void KeyboardTeleop::spin()
 
 	puts("Reading from keyboard");
 	puts("---------------------------");
-	puts("Use 'WASD' for translation");
-	puts("Use 'QE' for rotation");
+	puts("Use 'ZQSD' for translation");
+	puts("Use 'AE' for rotation");
 
 	puts("Press 'Space' to STOP");
 
@@ -75,19 +75,19 @@ void KeyboardTeleop::spin()
 		switch( c )
 		{
 		// Walking
-		case KEYCODE_W:
+		case KEYCODE_Z:
 			vel_x = 0.05;
 			break;
 		case KEYCODE_S:
 			vel_x = -0.05;
 			break;
-		case KEYCODE_A:
+		case KEYCODE_Q:
 			vel_y = 0.05;
 			break;
 		case KEYCODE_D:
 			vel_y = -0.05;
 			break;
-		case KEYCODE_Q:
+		case KEYCODE_A:
 			vel_omega = 0.5;
 			break;
 		case KEYCODE_E:
