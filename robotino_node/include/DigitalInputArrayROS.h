@@ -30,8 +30,7 @@ private:
 
 	ros::Time stamp_;
 
-	void valuesChangedEvent( const bool* values, unsigned int size );
-
+	virtual void valuesChangedEvent(const int* values, unsigned int size);
 };
 
 #endif /* DIGITALINPUTARRAYROS_H_ */
