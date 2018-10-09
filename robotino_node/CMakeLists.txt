@@ -43,7 +43,6 @@ add_executable(
   src/ElectricalGripperROS.cpp
   src/EncoderInputROS.cpp
   src/GrapplerROS.cpp
-  #src/KinectROS.cpp
   src/LaserRangeFinderROS.cpp
   src/MotorArrayROS.cpp
   src/NorthStarROS.cpp
@@ -111,26 +110,9 @@ target_link_libraries(
   ${catkin_LIBRARIES}
 )
 
-add_executable(
-  robotino_mapping_node
-  src/robotino_mapping_node.cpp
-  src/MappingROS.cpp
-  src/RobotinoMappingNode.cpp
-  src/InitialPoseROS.cpp
-  src/NavGoalROS.cpp
-  src/ComROS.cpp
-)
-
-add_dependencies(robotino_mapping_node ${catkin_EXPORTED_TARGETS})
-
-target_link_libraries(
-  robotino_mapping_node
-  ${REC_ROBOTINO_API2_LIBRARY}
-  ${catkin_LIBRARIES}
-)
 
 # Mark executables and/or libraries for installation
-install(TARGETS robotino_node robotino_odometry_node robotino_laserrangefinder_node robotino_mapping_node robotino_camera_node
+install(TARGETS robotino_node robotino_odometry_node robotino_laserrangefinder_node robotino_camera_node
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
