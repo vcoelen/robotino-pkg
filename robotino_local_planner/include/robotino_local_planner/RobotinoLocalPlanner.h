@@ -13,6 +13,8 @@
 #include <geometry_msgs/Point32.h>
 #include <nav_msgs/Odometry.h>
 #include <std_msgs/Bool.h>
+#include <tf2_ros/buffer.h>
+#include <tf2_ros/transform_listener.h>
 #include <tf/transform_listener.h>
 #include <costmap_2d/costmap_2d_ros.h>
 #include <visualization_msgs/Marker.h>
@@ -24,9 +26,9 @@ namespace robotino_local_planner
 	{
 	public:
 		RobotinoLocalPlanner();
-		~RobotinoLocalPlanner();
+		virtual ~RobotinoLocalPlanner();
 
-		void initialize( std::string name, tf::TransformListener* tf, costmap_2d::Costmap2DROS* costmap_ros );
+		void initialize( std::string name, tf2_ros::Buffer* tf, costmap_2d::Costmap2DROS* costmap_ros );
 		bool computeVelocityCommands( geometry_msgs::Twist& cmd_vel);
 		bool isGoalReached();
 		bool setPlan( const std::vector<geometry_msgs::PoseStamped>& global_plan );
@@ -45,7 +47,7 @@ namespace robotino_local_planner
 
 		typedef enum { RotatingToStart, Moving, RotatingToGoal, Finished } State;
 
-		tf::TransformListener* tf_;
+		tf2_ros::Buffer* tf_;
 
 		std::vector<geometry_msgs::PoseStamped> global_plan_;
 

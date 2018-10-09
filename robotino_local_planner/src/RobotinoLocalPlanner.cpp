@@ -6,10 +6,10 @@
  */
 
 #include <robotino_local_planner/RobotinoLocalPlanner.h>
-#include <pluginlib/class_list_macros.h>
+#include <pluginlib/class_list_macros.hpp>
 #include <cmath>
 
-PLUGINLIB_DECLARE_CLASS(robotino_local_planner, RobotinoLocalPlanner, robotino_local_planner::RobotinoLocalPlanner, nav_core::BaseLocalPlanner)
+PLUGINLIB_EXPORT_CLASS( robotino_local_planner::RobotinoLocalPlanner, nav_core::BaseLocalPlanner)
 
 #define TRANSFORM_TIMEOUT 0.5
 #define PI 3.141592653
@@ -34,7 +34,7 @@ namespace robotino_local_planner
 		// Empty
 	}
 
-	void RobotinoLocalPlanner::initialize( std::string name, tf::TransformListener* tf, costmap_2d::Costmap2DROS* costmap_ros )
+	void RobotinoLocalPlanner::initialize( std::string name, tf2_ros::Buffer* tf, costmap_2d::Costmap2DROS* costmap_ros )
 	{
 		tf_ = tf;
 
@@ -162,8 +162,8 @@ namespace robotino_local_planner
 		try
 		{
 			boost::mutex::scoped_lock lock(odom_lock_);
-			tf_->waitForTransform( base_odom_.header.frame_id, global_plan_[next_heading_index_].header.frame_id, now, ros::Duration( TRANSFORM_TIMEOUT ) );
-			tf_->transformPose( base_odom_.header.frame_id, global_plan_[next_heading_index_], rotate_goal );
+			tf_->canTransform( base_odom_.header.frame_id, global_plan_[next_heading_index_].header.frame_id, now, ros::Duration( TRANSFORM_TIMEOUT ) );
+			tf_->transform( global_plan_[next_heading_index_], rotate_goal, base_odom_.header.frame_id );
 		}
 		catch(tf::LookupException& ex)
 		{
@@ -208,12 +208,12 @@ namespace robotino_local_planner
 		geometry_msgs::PoseStamped move_goal;
 		ros::Time now = ros::Time::now();
 		global_plan_[next_heading_index_].header.stamp = now;
-
+		
 		try
 		{
 			boost::mutex::scoped_lock lock(odom_lock_);
-			tf_->waitForTransform( base_odom_.header.frame_id, global_plan_[next_heading_index_].header.frame_id, now, ros::Duration( TRANSFORM_TIMEOUT ) );
-			tf_->transformPose( base_odom_.header.frame_id, global_plan_[next_heading_index_], move_goal );
+			tf_->canTransform( base_odom_.header.frame_id, global_plan_[next_heading_index_].header.frame_id, now, ros::Duration( TRANSFORM_TIMEOUT ) );
+			tf_->transform( global_plan_[next_heading_index_], move_goal, base_odom_.header.frame_id );
 		}
 		catch(tf::LookupException& ex)
 		{
@@ -274,12 +274,12 @@ namespace robotino_local_planner
 
 		ros::Time now = ros::Time::now();
 		global_plan_[next_heading_index_].header.stamp = now;
-
+		
 		try
 		{
 			boost::mutex::scoped_lock lock(odom_lock_);
-			tf_->waitForTransform( base_odom_.header.frame_id, global_plan_[next_heading_index_].header.frame_id, now, ros::Duration( TRANSFORM_TIMEOUT ) );
-			tf_->transformPose( base_odom_.header.frame_id, global_plan_[next_heading_index_], rotate_goal );
+			tf_->canTransform( base_odom_.header.frame_id, global_plan_[next_heading_index_].header.frame_id, now, ros::Duration( TRANSFORM_TIMEOUT ) );
+			tf_->transform( global_plan_[next_heading_index_], rotate_goal, base_odom_.header.frame_id );
 		}
 		catch(tf::LookupException& ex)
 		{
@@ -321,11 +321,11 @@ namespace robotino_local_planner
 			boost::mutex::scoped_lock lock(odom_lock_);
 			ros::Time now = ros::Time::now();
 			global_plan_[i].header.stamp = now;
-
+			
 			try
 			{
-				tf_->waitForTransform( base_odom_.header.frame_id, global_plan_[i].header.frame_id, now, ros::Duration( TRANSFORM_TIMEOUT ) );
-				tf_->transformPose( base_odom_.header.frame_id, global_plan_[i], next_heading_pose );
+				tf_->canTransform( base_odom_.header.frame_id, global_plan_[i].header.frame_id, now, ros::Duration( TRANSFORM_TIMEOUT ) );
+				tf_->transform( global_plan_[i], next_heading_pose, base_odom_.header.frame_id );
 			}
 			catch(tf::LookupException& ex)
 			{
