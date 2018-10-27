@@ -1,8 +1,7 @@
 robotino-pkg
 ============
 
-Objectif : version stable et compatible catkin des paquets ros robotino
+Objectifs : 
+* Version stable et compatible catkin des paquets ros robotino
+* Garder la compatibilité avec le robotino 2
 
-Principe du workflow (branchs)
-------------------------------
-Expliqué ici : https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow
