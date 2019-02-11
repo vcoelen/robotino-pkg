@@ -5,13 +5,13 @@ find_package(OpenCV REQUIRED)
 
 find_package(PCL 1.2 REQUIRED)
 
-find_package(catkin REQUIRED COMPONENTS 
+find_package(catkin REQUIRED COMPONENTS
 geometry_msgs std_msgs message_generation roscpp roslib OpenCV cv_bridge tf image_transport robotino_msgs)
 
 # Attention, modif à faire après TOUS les find_package()
 set(
   CMAKE_MODULE_PATH
-  /usr/local/robotino/api2/cmake
+  /opt/robotino/cmake
 )
 find_package(RobotinoAPI2 REQUIRED)
 
