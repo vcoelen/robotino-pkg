@@ -2,7 +2,7 @@
   <name>robotino_node</name>
   <version>1.0.0</version>
   <description>
-Implements a node which reads sensor data from Robotino and broadcasts it. 
+Implements a node which reads sensor data from Robotino and broadcasts it.
 It also implements a few services.
   </description>
   <maintainer email="tianlan.shao@tum.de">Tianlan Shao</maintainer>
@@ -10,7 +10,7 @@ It also implements a few services.
   <license>BSD</license>
   <url>http://ros.org/wiki/robotino_node</url>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
   <build_depend>robotino_msgs</build_depend>
   <build_depend>nav_msgs</build_depend>
@@ -25,6 +25,8 @@ It also implements a few services.
   <run_depend>image_transport</run_depend>
   <run_depend>pcl</run_depend>
   <run_depend>pcl_ros</run_depend>
+
+  <export>
+      <build_type>ament_cmake</build_type>
+  </export>
 </package>
-
-
