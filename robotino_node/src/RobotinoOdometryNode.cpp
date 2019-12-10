@@ -5,16 +5,27 @@
  *      Author: indorewala@servicerobotics.eu
  */
 
+#include <chrono>
+
 #include "RobotinoOdometryNode.h"
 
-RobotinoOdometryNode::RobotinoOdometryNode()
-	: nh_("~")
-{
-	nh_.param<std::string>("hostname", hostname_, "192.168.5.5" );
+using namespace std::chrono_literals;
 
+RobotinoOdometryNode::RobotinoOdometryNode() :
+ 	Node("robotino_odometry_node"),
+	com_(this->shared_from_this()),
+	odometry_(this->shared_from_this())
+{
+	declare_parameter("hostname", "IP address of the robot");
+    if(!get_parameter("hostname", hostname_))
+    {
+        hostname_ = "172.26.1.1";
+    }
 	com_.setName( "Odometry" );
 
 	initModules();
+
+	timer_ = this->create_wall_timer( 33ms, std::bind(&RobotinoOdometryNode::timer_callback, this));
 }
 
 RobotinoOdometryNode::~RobotinoOdometryNode()
@@ -31,18 +42,10 @@ void RobotinoOdometryNode::initModules()
 	com_.connectToServer( false );
 }
 
-bool RobotinoOdometryNode::spin()
+void RobotinoOdometryNode::timer_callback()
 {
-	ros::Rate loop_rate( 30 );
+	builtin_interfaces::msg::Time curr_time = now();
+	odometry_.setTimeStamp(curr_time);
 
-	while(nh_.ok())
-	{
-		builtin_interfaces::msg::Time curr_time = node_->now();
-		odometry_.setTimeStamp(curr_time);
-
-		com_.processEvents();
-		ros::spinOnce();
-		loop_rate.sleep();
-	}
-	return true;
+	com_.processEvents();
 }

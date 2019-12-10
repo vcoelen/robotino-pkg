@@ -12,8 +12,8 @@
 
 int main(int argc, char** argv)
 {
-	ros::init(argc, argv, "robotino_odometry_node");
-	RobotinoOdometryNode rn;
-	rn.spin();
+	rclcpp::init(argc, argv);
+	rclcpp::spin(std::make_shared<RobotinoOdometryNode>());
+	rclcpp::shutdown();
 	return 0;
 }

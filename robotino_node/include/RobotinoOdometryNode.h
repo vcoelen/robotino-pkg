@@ -15,16 +15,16 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-class RobotinoOdometryNode
+class RobotinoOdometryNode : public rclcpp::Node
 {
 public:
 	RobotinoOdometryNode();
 	~RobotinoOdometryNode();
 
-	bool spin();
-
 private:
 	std::shared_ptr<rclcpp::Node> node_;
+
+	rclcpp::TimerBase::SharedPtr timer_;
 
 	std::string hostname_;
 
@@ -32,6 +32,7 @@ private:
 	OdometryROS odometry_;
 
 	void initModules();
+	void timer_callback();
 };
 
 #endif /* ROBOTINOODOMETRYNODE_H_ */

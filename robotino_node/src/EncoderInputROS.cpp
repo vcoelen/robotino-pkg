@@ -41,7 +41,7 @@ void EncoderInputROS::readingsChangedEvent( int velocity, int position, float cu
 	encoder_pub_->publish( encoder_msg_ );
 }
 
-bool EncoderInputROS::setEncoderPositionService(
+void EncoderInputROS::setEncoderPositionService(
 	const std::shared_ptr<rmw_request_id_t> request_header,
 	const std::shared_ptr<robotino_msgs::srv::SetEncoderPosition::Request> req,
 	const std::shared_ptr<robotino_msgs::srv::SetEncoderPosition::Response> res)

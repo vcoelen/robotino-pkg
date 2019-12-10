@@ -29,14 +29,6 @@ RobotinoNode::RobotinoNode() :
     omni_drive_(this->shared_from_this()),
     power_management_(this->shared_from_this())
 {
-	// nh_.param<std::string>("hostname", hostname_, "172.26.1.1" );
-	// nh_.param<double>("max_linear_vel", max_linear_vel_, 0.2 );
-	// nh_.param<double>("min_linear_vel", min_linear_vel_, 0.05 );
-	// nh_.param<double>("max_angular_vel", max_angular_vel_, 1.0 );
-	// nh_.param<double>("min_angular_vel", min_angular_vel_, 0.1 );
-	// nh_.param<bool>("downsample_kinect", downsample_kinect_, true );
-	// nh_.param<double>("leaf_size_kinect", leaf_size_kinect_, 0.05 );
-    //
     declare_parameter("hostname", "IP address of the robot");
     if(!get_parameter("hostname", hostname_))
     {
@@ -195,6 +187,4 @@ void RobotinoNode::timer_callback()
 	publishDistanceMsg();
 	publishJointStateMsg();
 	com_.processEvents();
-
-
 }

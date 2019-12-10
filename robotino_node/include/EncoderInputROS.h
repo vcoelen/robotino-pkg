@@ -38,7 +38,7 @@ private:
 
 	void readingsChangedEvent( int velocity, int position, float current );
 
-	bool setEncoderPositionService(
+	void setEncoderPositionService(
 		const std::shared_ptr<rmw_request_id_t> request_header,
 		const std::shared_ptr<robotino_msgs::srv::SetEncoderPosition::Request> req,
 		const std::shared_ptr<robotino_msgs::srv::SetEncoderPosition::Response> res);

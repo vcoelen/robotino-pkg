@@ -5,9 +5,9 @@ if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
 endif()
 
-# if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-#   add_compile_options(-Wall -Wextra -Wpedantic)
-# endif()
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
 
 
 find_package(ament_cmake REQUIRED)
@@ -26,8 +26,8 @@ find_package(PCL 1.2 REQUIRED)
 
 # Attention, modif à faire après TOUS les find_package()
 set(
-  CMAKE_MODULE_PATH
-  /opt/robotino/cmake
+    CMAKE_MODULE_PATH
+    /opt/robotino/cmake
 )
 find_package(RobotinoAPI2 REQUIRED)
 
@@ -37,32 +37,31 @@ link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 
 include_directories(include
-  ${catkin_INCLUDE_DIRS}
-  ${REC_ROBOTINO_API2_INCLUDE_DIRS}
+    ${REC_ROBOTINO_API2_INCLUDE_DIRS}
 )
 
 
 add_executable(
-  robotino_node
-  src/robotino_node.cpp
-  src/AnalogInputArrayROS.cpp
-  src/BumperROS.cpp
-  src/CameraROS.cpp
-  src/CompactBHAROS.cpp
-  src/ComROS.cpp
-  src/DigitalInputArrayROS.cpp
-  src/DigitalOutputArrayROS.cpp
-  src/DistanceSensorArrayROS.cpp
-  src/ElectricalGripperROS.cpp
-  src/EncoderInputROS.cpp
-  src/GrapplerROS.cpp
-  src/LaserRangeFinderROS.cpp
-  src/MotorArrayROS.cpp
-  src/NorthStarROS.cpp
-  src/OdometryROS.cpp
-  src/OmniDriveROS.cpp
-  src/PowerManagementROS.cpp
-  src/RobotinoNode.cpp
+    robotino_node
+    src/robotino_node.cpp
+    src/AnalogInputArrayROS.cpp
+    src/BumperROS.cpp
+    src/CameraROS.cpp
+    src/CompactBHAROS.cpp
+    src/ComROS.cpp
+    src/DigitalInputArrayROS.cpp
+    src/DigitalOutputArrayROS.cpp
+    src/DistanceSensorArrayROS.cpp
+    src/ElectricalGripperROS.cpp
+    src/EncoderInputROS.cpp
+    src/GrapplerROS.cpp
+    src/LaserRangeFinderROS.cpp
+    src/MotorArrayROS.cpp
+    src/NorthStarROS.cpp
+    src/OdometryROS.cpp
+    src/OmniDriveROS.cpp
+    src/PowerManagementROS.cpp
+    src/RobotinoNode.cpp
 )
 
 ament_target_dependencies(robotino_node
@@ -82,23 +81,31 @@ target_link_libraries(
   	${REC_ROBOTINO_API2_LIBRARY}
 	${PCL_LIBRARIES}
 )
-#
-# add_executable(
-#   robotino_odometry_node
-#   src/robotino_odometry_node.cpp
-#   src/ComROS.cpp
-#   src/OdometryROS.cpp
-#   src/RobotinoOdometryNode.cpp
-# )
-#
-#
-# add_dependencies(robotino_odometry_node ${catkin_EXPORTED_TARGETS})
-#
-# target_link_libraries(
-#   robotino_odometry_node
-#   ${REC_ROBOTINO_API2_LIBRARY}
-#   ${catkin_LIBRARIES}
-# )
+
+add_executable(
+    robotino_odometry_node
+    src/robotino_odometry_node.cpp
+    src/ComROS.cpp
+    src/OdometryROS.cpp
+    src/RobotinoOdometryNode.cpp
+)
+
+ament_target_dependencies(robotino_odometry_node
+    rclcpp
+    geometry_msgs
+    std_msgs
+    nav_msgs
+    cv_bridge
+    tf2
+    tf2_ros
+    image_transport
+    sensor_msgs
+    robotino_msgs)
+
+target_link_libraries(
+    robotino_odometry_node
+    ${REC_ROBOTINO_API2_LIBRARY}
+)
 #
 # add_executable(
 #   robotino_laserrangefinder_node

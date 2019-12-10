@@ -34,6 +34,7 @@ void ElectricalGripperROS::setGripperStateService(
 	const std::shared_ptr<robotino_msgs::srv::SetGripperState::Request> req,
 	const std::shared_ptr<robotino_msgs::srv::SetGripperState::Response> res)
 {
+	(void)request_header;
 	RCLCPP_INFO(node_->get_logger(), "request gripper state : %s", req->state ? "true" : "false");
 	if( req->state )
 		open();

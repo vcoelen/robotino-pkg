@@ -43,7 +43,7 @@ private:
 
 	void readingsEvent(double x, double y, double phi,
 			float vx, float vy, float omega, unsigned int sequence );
-	bool resetOdometryService(
+	void resetOdometryService(
 		const std::shared_ptr<rmw_request_id_t> request_header,
 		const std::shared_ptr<robotino_msgs::srv::ResetOdometry::Request> req,
 		const std::shared_ptr<robotino_msgs::srv::ResetOdometry::Response> res);
