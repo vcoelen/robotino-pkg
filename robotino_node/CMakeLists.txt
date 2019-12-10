@@ -140,12 +140,12 @@ target_link_libraries(
 # )
 #
 #
-# # Mark executables and/or libraries for installation
-# install(TARGETS robotino_node robotino_odometry_node robotino_laserrangefinder_node robotino_camera_node
-#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
 
+
+install(TARGETS
+  robotino_node
+  robotino_odometry_node
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 ament_package()
