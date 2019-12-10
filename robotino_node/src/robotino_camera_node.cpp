@@ -12,8 +12,8 @@
 
 int main(int argc, char** argv)
 {
-	ros::init(argc, argv, "robotino_camera_node");
-	RobotinoCameraNode rn;
-	rn.spin();
+	rclcpp::init(argc, argv);
+	rclcpp::spin(std::make_shared<RobotinoCameraNode>());
+	rclcpp::shutdown();
 	return 0;
 }

@@ -15,16 +15,14 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-class RobotinoCameraNode
+class RobotinoCameraNode : public rclcpp::Node
 {
 public:
 	RobotinoCameraNode();
 	~RobotinoCameraNode();
 
-	bool spin();
-
 private:
-	std::shared_ptr<rclcpp::Node> node_;
+	rclcpp::TimerBase::SharedPtr timer_;
 
 	std::string hostname_;
 	int cameraNumber_;
@@ -33,6 +31,7 @@ private:
 	CameraROS camera_;
 
 	void initModules();
+	void timer_callback();
 };
 
 #endif /* RobotinoCameraNode_H */

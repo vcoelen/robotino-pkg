@@ -74,7 +74,8 @@ ament_target_dependencies(robotino_node
     tf2_ros
     image_transport
     sensor_msgs
-    robotino_msgs)
+    robotino_msgs
+)
 
 target_link_libraries(
  	robotino_node
@@ -100,7 +101,8 @@ ament_target_dependencies(robotino_odometry_node
     tf2_ros
     image_transport
     sensor_msgs
-    robotino_msgs)
+    robotino_msgs
+)
 
 target_link_libraries(
     robotino_odometry_node
@@ -108,11 +110,11 @@ target_link_libraries(
 )
 
 add_executable(
-  robotino_laserrangefinder_node
-  src/robotino_laserrangefinder_node.cpp
-  src/ComROS.cpp
-  src/LaserRangeFinderROS.cpp
-  src/RobotinoLaserRangeFinderNode.cpp
+    robotino_laserrangefinder_node
+    src/robotino_laserrangefinder_node.cpp
+    src/ComROS.cpp
+    src/LaserRangeFinderROS.cpp
+    src/RobotinoLaserRangeFinderNode.cpp
 )
 
 ament_target_dependencies(robotino_laserrangefinder_node
@@ -125,7 +127,8 @@ ament_target_dependencies(robotino_laserrangefinder_node
     tf2_ros
     image_transport
     sensor_msgs
-    robotino_msgs)
+    robotino_msgs
+)
 
 target_link_libraries(
   robotino_laserrangefinder_node
@@ -133,28 +136,38 @@ target_link_libraries(
 )
 
 
-# add_executable(
-#   robotino_camera_node
-#   src/robotino_camera_node.cpp
-#   src/ComROS.cpp
-#   src/CameraROS.cpp
-#   src/RobotinoCameraNode.cpp
-# )
-#
-# add_dependencies(robotino_camera_node ${catkin_EXPORTED_TARGETS})
-#
-# target_link_libraries(
-#   robotino_camera_node
-#   ${REC_ROBOTINO_API2_LIBRARY}
-#   ${catkin_LIBRARIES}
-# )
-#
-#
+add_executable(
+    robotino_camera_node
+    src/robotino_camera_node.cpp
+    src/ComROS.cpp
+    src/CameraROS.cpp
+    src/RobotinoCameraNode.cpp
+)
+
+ament_target_dependencies(robotino_camera_node
+    rclcpp
+    geometry_msgs
+    std_msgs
+    nav_msgs
+    cv_bridge
+    tf2
+    tf2_ros
+    image_transport
+    sensor_msgs
+    robotino_msgs
+)
+
+target_link_libraries(
+    robotino_camera_node
+    ${REC_ROBOTINO_API2_LIBRARY}
+)
 
 
 install(TARGETS
   robotino_node
   robotino_odometry_node
+  robotino_laserrangefinder_node
+  robotino_camera_node
   DESTINATION lib/${PROJECT_NAME}
 )
 

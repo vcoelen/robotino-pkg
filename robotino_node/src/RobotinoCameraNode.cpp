@@ -6,19 +6,36 @@
  */
 
 #include "RobotinoCameraNode.h"
+#include <chrono>
+
 #include <sstream>
 
-RobotinoCameraNode::RobotinoCameraNode()
-	: nh_("~")
+using namespace std::chrono_literals;
+
+RobotinoCameraNode::RobotinoCameraNode() :
+	Node("robotino_laserrangefinder_node"),
+	com_(this->shared_from_this()),
+	camera_(this->shared_from_this())
 {
-	nh_.param<std::string>("hostname", hostname_, "172.26.1.1" );
-	nh_.param<int>("cameraNumber", cameraNumber_, 0 );
+	declare_parameter("hostname", "IP address of the robot");
+    if(!get_parameter("hostname", hostname_))
+    {
+        hostname_ = "172.26.1.1";
+    }
+
+	declare_parameter("cameraNumber", "");
+    if(!get_parameter("cameraNumber_", cameraNumber_))
+    {
+        cameraNumber_ = 0;
+    }
 
 	std::ostringstream os;
 	os << "Camera" << cameraNumber_;
 	com_.setName( os.str() );
 
 	initModules();
+	timer_ = this->create_wall_timer( 33ms, std::bind(&RobotinoCameraNode::timer_callback, this));
+
 }
 
 RobotinoCameraNode::~RobotinoCameraNode()
@@ -38,19 +55,11 @@ void RobotinoCameraNode::initModules()
 	com_.connectToServer( false );
 }
 
-bool RobotinoCameraNode::spin()
+void RobotinoCameraNode::timer_callback()
 {
-	ros::Rate loop_rate( 30 );
 
-	while(nh_.ok())
-	{
-		builtin_interfaces::msg::Time curr_time = node_->now();
-		camera_.setTimeStamp(curr_time);
+	builtin_interfaces::msg::Time curr_time = now();
+	camera_.setTimeStamp(curr_time);
 
-		com_.processEvents();
-		ros::spinOnce();
-		loop_rate.sleep();
-	}
-	return true;
+	com_.processEvents();
 }
-

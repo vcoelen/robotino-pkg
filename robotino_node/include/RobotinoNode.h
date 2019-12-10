@@ -40,7 +40,6 @@ public:
 	~RobotinoNode();
 
 private:
-	//std::shared_ptr<rclcpp::Node> node_;
 	rclcpp::TimerBase::SharedPtr timer_;
 
 	std::string hostname_;
