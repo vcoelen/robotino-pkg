@@ -5,20 +5,37 @@
  *      Author: indorewala@servicerobotics.eu
  */
 
-#include "RobotinoLaserRangeFinderNode.h"
 #include <sstream>
+#include <chrono>
 
-RobotinoLaserRangeFinderNode::RobotinoLaserRangeFinderNode()
-	: nh_("~")
+#include "RobotinoLaserRangeFinderNode.h"
+
+using namespace std::chrono_literals;
+
+RobotinoLaserRangeFinderNode::RobotinoLaserRangeFinderNode() :
+	Node("robotino_laserrangefinder_node"),
+	com_(this->shared_from_this()),
+	laser_range_finder_(this->shared_from_this())
 {
-	nh_.param<std::string>("hostname", hostname_, "172.26.1.1" );
-	nh_.param<int>("laserRangeFinderNumber", laserRangeFinderNumber_, 0 );
+	declare_parameter("hostname", "IP address of the robot");
+    if(!get_parameter("hostname", hostname_))
+    {
+        hostname_ = "172.26.1.1";
+    }
+
+	declare_parameter("laserRangeFinderNumber", "");
+    if(!get_parameter("laserRangeFinderNumber_", laserRangeFinderNumber_))
+    {
+        laserRangeFinderNumber_ = 0;
+    }
+
 
 	std::ostringstream os;
 	os << "LaserRangeFinder" << laserRangeFinderNumber_;
 	com_.setName( os.str() );
 
 	initModules();
+	timer_ = this->create_wall_timer( 33ms, std::bind(&RobotinoLaserRangeFinderNode::timer_callback, this));
 }
 
 RobotinoLaserRangeFinderNode::~RobotinoLaserRangeFinderNode()
@@ -38,19 +55,11 @@ void RobotinoLaserRangeFinderNode::initModules()
 	com_.connectToServer( false );
 }
 
-bool RobotinoLaserRangeFinderNode::spin()
+void RobotinoLaserRangeFinderNode::timer_callback()
 {
-	ros::Rate loop_rate( 30 );
+	builtin_interfaces::msg::Time curr_time = now();
+	laser_range_finder_.setTimeStamp(curr_time);
 
-	while(nh_.ok())
-	{
-		builtin_interfaces::msg::Time curr_time = node_->now();
-		laser_range_finder_.setTimeStamp(curr_time);
+	com_.processEvents();
 
-		com_.processEvents();
-		ros::spinOnce();
-		loop_rate.sleep();
-	}
-	return true;
 }
-

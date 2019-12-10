@@ -15,16 +15,14 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-class RobotinoLaserRangeFinderNode
+class RobotinoLaserRangeFinderNode : public rclcpp::Node
 {
 public:
 	RobotinoLaserRangeFinderNode();
 	~RobotinoLaserRangeFinderNode();
 
-	bool spin();
-
 private:
-	std::shared_ptr<rclcpp::Node> node_;
+	rclcpp::TimerBase::SharedPtr timer_;
 
 	std::string hostname_;
 	int laserRangeFinderNumber_;
@@ -33,6 +31,7 @@ private:
 	LaserRangeFinderROS laser_range_finder_;
 
 	void initModules();
+	void timer_callback();
 };
 
 #endif /* ROBOTINOLaserRangeFinderNODE_H_ */

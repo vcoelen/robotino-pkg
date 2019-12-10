@@ -12,8 +12,8 @@
 
 int main(int argc, char** argv)
 {
-	ros::init(argc, argv, "robotino_laserrangefinder_node");
-	RobotinoLaserRangeFinderNode rn;
-	rn.spin();
+	rclcpp::init(argc, argv);
+	rclcpp::spin(std::make_shared<RobotinoLaserRangeFinderNode>());
+	rclcpp::shutdown();
 	return 0;
 }

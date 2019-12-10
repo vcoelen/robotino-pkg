@@ -106,23 +106,33 @@ target_link_libraries(
     robotino_odometry_node
     ${REC_ROBOTINO_API2_LIBRARY}
 )
-#
-# add_executable(
-#   robotino_laserrangefinder_node
-#   src/robotino_laserrangefinder_node.cpp
-#   src/ComROS.cpp
-#   src/LaserRangeFinderROS.cpp
-#   src/RobotinoLaserRangeFinderNode.cpp
-# )
-#
-# add_dependencies(robotino_laserrangefinder_node ${catkin_EXPORTED_TARGETS})
-#
-# target_link_libraries(
-#   robotino_laserrangefinder_node
-#   ${REC_ROBOTINO_API2_LIBRARY}
-#   ${catkin_LIBRARIES}
-# )
-#
+
+add_executable(
+  robotino_laserrangefinder_node
+  src/robotino_laserrangefinder_node.cpp
+  src/ComROS.cpp
+  src/LaserRangeFinderROS.cpp
+  src/RobotinoLaserRangeFinderNode.cpp
+)
+
+ament_target_dependencies(robotino_laserrangefinder_node
+    rclcpp
+    geometry_msgs
+    std_msgs
+    nav_msgs
+    cv_bridge
+    tf2
+    tf2_ros
+    image_transport
+    sensor_msgs
+    robotino_msgs)
+
+target_link_libraries(
+  robotino_laserrangefinder_node
+  ${REC_ROBOTINO_API2_LIBRARY}
+)
+
+
 # add_executable(
 #   robotino_camera_node
 #   src/robotino_camera_node.cpp
