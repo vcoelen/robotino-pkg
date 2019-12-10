@@ -1,4 +1,4 @@
-<package>
+<package format="3">
  <name>robotino_teleop</name>
   <version>1.0.0</version>
   <description>
@@ -9,14 +9,13 @@ Implements nodes to control Robotino using a joystick or a keyboard.
   <license>BSD</license>
   <url>http://ros.org/wiki/robotino_teleop</url>
 
-  <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>robotino_node</build_depend>
-  <build_depend>geometry_msgs</build_depend>
-  <build_depend>sensor_msgs</build_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
- <run_depend>robotino_node</run_depend>
-  <run_depend>geometry_msgs</run_depend>
-  <run_depend>sensor_msgs</run_depend>
+  <depend>robotino_node</depend>
+  <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
+
+  <export>
+      <build_type>ament_cmake</build_type>
+  </export>
 </package>
-
-

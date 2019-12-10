@@ -7,14 +7,12 @@
 
 #include "JoystickTeleop.h"
 
-#include <ros/ros.h>
+#include "rclcpp/rclcpp.hpp"
 
 int main( int argc, char** argv )
 {
-	ros::init( argc, argv, "joystick_teleop_node" );
-	JoystickTeleop rt_;
-	rt_.spin();
-
+	rclcpp::init(argc, argv);
+	rclcpp::spin(std::make_shared<JoystickTeleop>());
+	rclcpp::shutdown();
 	return 0;
 }
-

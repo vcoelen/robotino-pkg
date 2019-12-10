@@ -5,38 +5,69 @@
  *      Author: indorewala@servicerobotics.eu
  */
 
+#include <chrono>
+#include <memory>
+
 #include "JoystickTeleop.h"
 
-JoystickTeleop::JoystickTeleop():
-	nh_("~")
-{
-	cmd_vel_pub_ = nh_.advertise<geometry_msgs::Twist>("/cmd_vel", 1, true);
-	joy_sub_ = nh_.subscribe("/joy", 1, &JoystickTeleop::joyCallback, this);
+using namespace std::chrono_literals;
+using std::placeholders::_1;
 
-	readParams( nh_ );
+JoystickTeleop::JoystickTeleop() :
+	Node("joystick_teleop_node")
+{
+	cmd_vel_pub_ = create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 1); //TODO (vcoelen) removed latching add QoS
+	joy_sub_ = create_subscription<sensor_msgs::msg::Joy>("/joy", 1, std::bind(&JoystickTeleop::joyCallback, this, _1));
+
+	readParams();
+
+	timer_ = this->create_wall_timer( 200ms, std::bind(&JoystickTeleop::timer_callback, this));
 }
 
 JoystickTeleop::~JoystickTeleop()
 {
-	cmd_vel_pub_.shutdown();
-	joy_sub_.shutdown();
 }
 
-void JoystickTeleop::readParams( ros::NodeHandle& n)
+void JoystickTeleop::readParams()
 {
-	n.param<int>("axis_linear_x", axis_linear_x_, 1);
-	n.param<int>("axis_linear_y", axis_linear_y_, 0);
-	n.param<int>("axis_angular", axis_angular_, 2);
-	n.param<double>("scale_linear", scale_linear_, 0.1);
-	n.param<double>("scale_angular", scale_angular_, 0.2);
+
+	declare_parameter("axis_linear_x", 19);
+    if(!get_parameter("axis_linear_x", axis_linear_x_))
+    {
+ 		axis_linear_x_ = 1;
+    }
+
+	declare_parameter("axis_linear_y", 0);
+    if(!get_parameter("axis_linear_y", axis_linear_y_))
+    {
+ 		axis_linear_y_ = 0;
+    }
+
+	declare_parameter("axis_angular", 2);
+    if(!get_parameter("axis_angular", axis_angular_))
+     {
+ 		axis_angular_ = 2;
+    }
+
+	declare_parameter("scale_linear", 0.1);
+    if(!get_parameter("scale_linear", scale_linear_))
+    {
+ 		scale_linear_ = 0.1;
+    }
+
+	declare_parameter("scale_angular", 0.2);
+    if(!get_parameter("scale_angular", scale_angular_))
+    {
+ 		scale_angular_ = 0.2;
+    }
 
 }
 
-void JoystickTeleop::joyCallback( const sensor_msgs::JoyConstPtr& msg)
+void JoystickTeleop::joyCallback( const sensor_msgs::msg::Joy::SharedPtr msg)
 {
 	if( msg->axes.size() < 3)
 	{
-		ROS_ERROR( "Too few joystick axes: %d (expected more than 3)", msg->axes.size() );
+		RCLCPP_ERROR(get_logger(), "Too few joystick axes: %d (expected more than 3)", msg->axes.size() );
 		return;
 	}
 
@@ -45,13 +76,7 @@ void JoystickTeleop::joyCallback( const sensor_msgs::JoyConstPtr& msg)
 	cmd_vel_msg_.angular.z = msg->axes[axis_angular_] * scale_angular_;
 }
 
-void JoystickTeleop::spin()
+void JoystickTeleop::timer_callback()
 {
-	ros::Rate loop_rate(5);
-	while( nh_.ok() )
-	{
-		cmd_vel_pub_.publish( cmd_vel_msg_ );
-		ros::spinOnce();
-		loop_rate.sleep();
-	}
+	cmd_vel_pub_->publish( cmd_vel_msg_ );
 }
