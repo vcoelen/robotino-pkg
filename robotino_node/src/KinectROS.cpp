@@ -16,19 +16,20 @@ namespace sensor_msgs
 extern bool fillImage(Image &image, const std::string &encoding_arg, uint32_t rows_arg, uint32_t cols_arg, uint32_t step_arg, const void *data_arg);
 };
 
-KinectROS::KinectROS():
-	img_transport_(nh_),
+KinectROS::KinectROS(std::shared_ptr<rclcpp::Node> node) :
+	node_(node),
+	img_transport_(node_),
 	downsample_(true)
 {
-	cloud_pub_ = nh_.advertise<PointCloud>("kinect", 1 );
-	streaming_pub_ = img_transport_.advertiseCamera("image_raw_kinect", 1, false);
+	cloud_pub_ = node_->create_publisher<PointCloud>("kinect", 1 );
+	streaming_pub_ = img_transport_.advertiseCamera("image_raw_kinect", 1); // removed latching=false TODO (vcoelen) has to be fixed
 	init();
 }
 
 KinectROS::~KinectROS()
 {
-	cloud_pub_.shutdown();
-	streaming_pub_.shutdown();
+
+
 }
 
 void KinectROS::setDownsample( bool downsample )
@@ -41,7 +42,7 @@ void KinectROS::setLeafSize( double leaf_size )
 	leaf_size_ = leaf_size;
 }
 
-void KinectROS::setTimeStamp(ros::Time stamp)
+void KinectROS::setTimeStamp(builtin_interfaces::msg::Time stamp)
 {
 	stamp_ = stamp;
 }
@@ -119,19 +120,19 @@ void KinectROS::depthEvent(
 
 	if( downsample_ )
 	{
-		sensor_msgs::PointCloud2 cloud;
-		sensor_msgs::PointCloud2::Ptr cloud_downsampled (new sensor_msgs::PointCloud2());
-		pcl::VoxelGrid<sensor_msgs::PointCloud2> vg;
+		sensor_msgs::msg::PointCloud2 cloud;
+		sensor_msgs::msg::PointCloud2::Ptr cloud_downsampled (new sensor_msgs::msg::PointCloud2());
+		pcl::VoxelGrid<sensor_msgs::msg::PointCloud2> vg;
 		pcl::toROSMsg( msg_transformed, cloud );
-		vg.setInputCloud( boost::make_shared<sensor_msgs::PointCloud2> (cloud) );
+		vg.setInputCloud( boost::make_shared<sensor_msgs::msg::PointCloud2> (cloud) );
 		vg.setLeafSize (leaf_size_, leaf_size_, leaf_size_);
 		vg.filter (*cloud_downsampled);
 
-		cloud_pub_.publish( cloud_downsampled );
+		cloud_pub_->publish( cloud_downsampled );
 	}
 	else
 	{
-		cloud_pub_.publish( msg );
+		cloud_pub_->publish( msg );
 	}
 }
 
@@ -146,13 +147,13 @@ void KinectROS::videoEvent(
 {
 	// Build the Image msg
 	img_msg_.header.stamp = stamp_;
-	sensor_msgs::fillImage(img_msg_, "bgr8", height, width, step, data);
+	sensor_msgs::msg::fillImage(img_msg_, "bgr8", height, width, step, data);
 
 	// Build the CameraInfo msg
-	cam_info_msg_.header.stamp = ros::Time::now();
+	cam_info_msg_.header.stamp = node_->now();
 	cam_info_msg_.height = height;
 	cam_info_msg_.width = width;
 
 	// Publish the Image & CameraInfo msgs
-	streaming_pub_.publish(img_msg_, cam_info_msg_);
+	streaming_pub_->publish(img_msg_, cam_info_msg_);
 }

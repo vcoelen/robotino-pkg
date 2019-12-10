@@ -5,32 +5,96 @@
  *      Author: indorewala@servicerobotics.eu
  */
 
+#include <cmath>
+#include <chrono>
+
 #include "RobotinoNode.h"
 
-RobotinoNode::RobotinoNode()
-	: nh_("~")
-{
-	nh_.param<std::string>("hostname", hostname_, "172.26.1.1" );
-	nh_.param<double>("max_linear_vel", max_linear_vel_, 0.2 );
-	nh_.param<double>("min_linear_vel", min_linear_vel_, 0.05 );
-	nh_.param<double>("max_angular_vel", max_angular_vel_, 1.0 );
-	nh_.param<double>("min_angular_vel", min_angular_vel_, 0.1 );
-	nh_.param<bool>("downsample_kinect", downsample_kinect_, true );
-	nh_.param<double>("leaf_size_kinect", leaf_size_kinect_, 0.05 );
+using namespace std::chrono_literals;
 
-	distances_clearing_pub_ = nh_.advertise<sensor_msgs::PointCloud>("/distance_sensors_clearing", 1, true);
-	joint_states_pub_= nh_.advertise<sensor_msgs::JointState>("/robotino_joint_states", 1, false);
+RobotinoNode::RobotinoNode() :
+  	Node("robotino_node"),
+    analog_input_array_(this->shared_from_this()),
+    bumper_(this->shared_from_this()),
+    compact_bha_(this->shared_from_this()),
+    com_(this->shared_from_this()),
+    digital_input_array_(this->shared_from_this()),
+    digital_output_array_(this->shared_from_this()),
+    distance_sensor_array_(this->shared_from_this()),
+    electrical_gripper_(this->shared_from_this()),
+    encoder_input_(this->shared_from_this()),
+    grappler_(this->shared_from_this()),
+    motor_array_(this->shared_from_this()),
+    north_star_(this->shared_from_this()),
+    omni_drive_(this->shared_from_this()),
+    power_management_(this->shared_from_this())
+{
+	// nh_.param<std::string>("hostname", hostname_, "172.26.1.1" );
+	// nh_.param<double>("max_linear_vel", max_linear_vel_, 0.2 );
+	// nh_.param<double>("min_linear_vel", min_linear_vel_, 0.05 );
+	// nh_.param<double>("max_angular_vel", max_angular_vel_, 1.0 );
+	// nh_.param<double>("min_angular_vel", min_angular_vel_, 0.1 );
+	// nh_.param<bool>("downsample_kinect", downsample_kinect_, true );
+	// nh_.param<double>("leaf_size_kinect", leaf_size_kinect_, 0.05 );
+    //
+    declare_parameter("hostname", "IP address of the robot");
+    if(!get_parameter("hostname", hostname_))
+    {
+        hostname_ = "172.26.1.1";
+    }
+
+    //TODO (vcoelen) description des paramètres
+    declare_parameter("max_linear_vel", "");
+    if(!get_parameter("max_linear_vel", max_linear_vel_))
+    {
+        max_linear_vel_ = 0.2;
+    }
+
+    declare_parameter("min_linear_vel", "");
+    if(!get_parameter("min_linear_vel", min_linear_vel_))
+    {
+        min_linear_vel_ = 0.05;
+    }
+
+    declare_parameter("max_angular_vel", "");
+    if(!get_parameter("max_angular_vel", max_angular_vel_))
+    {
+        max_angular_vel_ = 1.0;
+    }
+
+    declare_parameter("min_angular_vel", "");
+    if(!get_parameter("min_angular_vel", min_angular_vel_))
+    {
+        min_angular_vel_ = 0.1;
+    }
+
+    declare_parameter("downsample_kinect", "");
+    if(!get_parameter("downsample_kinect", downsample_kinect_))
+    {
+        downsample_kinect_ = true;
+    }
+
+    declare_parameter("leaf_size_kinect", "");
+    if(!get_parameter("leaf_size_kinect", leaf_size_kinect_))
+    {
+        leaf_size_kinect_ = 0.05;
+    }
+
+	distances_clearing_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud>("/distance_sensors_clearing", 1); //removed latching TODO (vcoelen) has to be fixed
+	joint_states_pub_= this->create_publisher<sensor_msgs::msg::JointState>("/robotino_joint_states", 1); // removed latching=false TODO (vcoelen) has to be fixed
 
 	com_.setName( "RobotinoNode" );
 
 	initModules();
 	initMsgs();
+
+	timer_ = this->create_wall_timer( 33ms, std::bind(&RobotinoNode::timer_callback, this));
 }
 
 RobotinoNode::~RobotinoNode()
 {
-	distances_clearing_pub_.shutdown();
-	joint_states_pub_.shutdown();
+
+
 }
 
 void RobotinoNode::initModules()
@@ -87,13 +151,13 @@ void RobotinoNode::initMsgs()
 
 void RobotinoNode::publishDistanceMsg()
 {
-//	curr_time_ = ros::Time::now();
+//	curr_time_ = node_->now();
 //	if( ( curr_time_ - clearing_time_ ).toSec() > 1 )
 //	{
 //		clearing_time_ = curr_time_;
-//		distances_clearing_pub_.publish( distances_clearing_msg_ );
+//		distances_clearing_pub_->publish( distances_clearing_msg_ );
 //	}
-	distances_clearing_pub_.publish( distances_clearing_msg_ );
+	distances_clearing_pub_->publish( distances_clearing_msg_ );
 }
 
 void RobotinoNode::publishJointStateMsg()
@@ -109,35 +173,28 @@ void RobotinoNode::publishJointStateMsg()
 	joint_state_msg_.position[2] = ( motor_positions_[1] / 16 ) * (2 * 3.142);
 
 	joint_state_msg_.header.stamp = curr_time_;
-	joint_states_pub_.publish( joint_state_msg_ );
+	joint_states_pub_->publish( joint_state_msg_ );
 }
 
-bool RobotinoNode::spin()
+void RobotinoNode::timer_callback()
 {
-	ros::Rate loop_rate( 30 );
+	curr_time_ = now();
 
-	while(nh_.ok())
-	{
-		curr_time_ = ros::Time::now();
+	analog_input_array_.setTimeStamp(curr_time_);
+	compact_bha_.setTimeStamp(curr_time_);
+	digital_input_array_.setTimeStamp(curr_time_);
+	distance_sensor_array_.setTimeStamp(curr_time_);
+	electrical_gripper_.setTimeStamp(curr_time_);
+	encoder_input_.setTimeStamp(curr_time_);
+	grappler_.setTimeStamp(curr_time_);
+	// kinect_.setTimeStamp(curr_time_);
+	motor_array_.setTimeStamp(curr_time_);
+	north_star_.setTimeStamp(curr_time_);
+	power_management_.setTimeStamp(curr_time_);
 
-		analog_input_array_.setTimeStamp(curr_time_);
-		compact_bha_.setTimeStamp(curr_time_);
-		digital_input_array_.setTimeStamp(curr_time_);
-		distance_sensor_array_.setTimeStamp(curr_time_);
-		electrical_gripper_.setTimeStamp(curr_time_);
-		encoder_input_.setTimeStamp(curr_time_);
-		grappler_.setTimeStamp(curr_time_);
-		// kinect_.setTimeStamp(curr_time_);
-		motor_array_.setTimeStamp(curr_time_);
-		north_star_.setTimeStamp(curr_time_);
-		power_management_.setTimeStamp(curr_time_);
+	publishDistanceMsg();
+	publishJointStateMsg();
+	com_.processEvents();
 
-		publishDistanceMsg();
-		publishJointStateMsg();
-		com_.processEvents();
-		ros::spinOnce();
-		loop_rate.sleep();
-	}
-	return true;
+
 }
-

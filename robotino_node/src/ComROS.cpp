@@ -8,7 +8,7 @@
 #include "ComROS.h"
 #include <sstream>
 
-ComROS::ComROS()
+ComROS::ComROS(std::shared_ptr<rclcpp::Node> node) : node_(node)
 {
 }
 
@@ -26,19 +26,19 @@ void ComROS::errorEvent( const char* errorString )
 	std::ostringstream os;
 	os << name_ << " : " << errorString;
 
-	ROS_ERROR( os.str().c_str() );
+	RCLCPP_ERROR(node_->get_logger(), os.str().c_str() );
 }
 
 void ComROS::connectedEvent()
 {
 	std::ostringstream os;
 	os << name_ << " connected to Robotino.";
-	ROS_INFO( os.str().c_str() );
+	RCLCPP_INFO(node_->get_logger(), os.str().c_str() );
 }
 
 void ComROS::connectionClosedEvent()
 {
 	std::ostringstream os;
 	os << name_ << " disconnected from Robotino.";
-	ROS_INFO( os.str().c_str() );
+	RCLCPP_INFO(node_->get_logger(), os.str().c_str() );
 }

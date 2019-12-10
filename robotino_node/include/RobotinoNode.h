@@ -8,6 +8,8 @@
 #ifndef ROBOTINONODE_H_
 #define ROBOTINONODE_H_
 
+#include <memory>
+
 #include "AnalogInputArrayROS.h"
 #include "BumperROS.h"
 #include "CompactBHAROS.h"
@@ -24,19 +26,22 @@
 #include "OmniDriveROS.h"
 #include "PowerManagementROS.h"
 
-#include <ros/ros.h>
-#include <sensor_msgs/PointCloud.h>
-#include <sensor_msgs/JointState.h>
+#include <memory>
+
+#include "rclcpp/rclcpp.hpp"
+#include <sensor_msgs/msg/point_cloud.hpp>
+#include <sensor_msgs/msg/joint_state.hpp>
 
 
-class RobotinoNode
+class RobotinoNode : public rclcpp::Node
 {
 public:
 	RobotinoNode();
 	~RobotinoNode();
 
 private:
-	ros::NodeHandle nh_;
+	//std::shared_ptr<rclcpp::Node> node_;
+	rclcpp::TimerBase::SharedPtr timer_;
 
 	std::string hostname_;
 	double max_linear_vel_, min_linear_vel_, max_angular_vel_, min_angular_vel_;
@@ -46,13 +51,13 @@ private:
 	std::vector<float> motor_velocities_;
 	std::vector<int> motor_positions_;
 
-	ros::Time curr_time_, clearing_time_;
+	builtin_interfaces::msg::Time curr_time_, clearing_time_;
 
-	ros::Publisher distances_clearing_pub_;
-	ros::Publisher joint_states_pub_;
+	rclcpp::Publisher<sensor_msgs::msg::PointCloud>::SharedPtr distances_clearing_pub_;
+	rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr joint_states_pub_;
 
-	sensor_msgs::PointCloud distances_clearing_msg_;
-	sensor_msgs::JointState joint_state_msg_;
+	sensor_msgs::msg::PointCloud distances_clearing_msg_;
+	sensor_msgs::msg::JointState joint_state_msg_;
 
 	AnalogInputArrayROS analog_input_array_;
 	BumperROS bumper_;
@@ -75,8 +80,8 @@ private:
 	void publishDistanceMsg();
 	void publishJointStateMsg();
 
-public:
-	bool spin();
+	void timer_callback();
+
 };
 
 #endif /* ROBOTINONODE_H_ */

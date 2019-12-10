@@ -1,13 +1,13 @@
 #ifndef _TRANSFORM_H_
 #define _TRANSFORM_H_
 
-#include <ros/ros.h>
-#include <tf/transform_listener.h>
-#include <geometry_msgs/Point.h>
-#include <sensor_msgs/PointCloud.h>
+#include "rclcpp/rclcpp.hpp"
+#include <tf/transform_listener.hpp>
+#include <geometry_msgs/msg/point.hpp>
+#include <sensor_msgs/msg/point_cloud.hpp>
 
-#include <nav_msgs/OccupancyGrid.h>
-#include <nav_msgs/Odometry.h>
+#include <nav_msgs/msg/occupancy_grid.hpp>
+#include <nav_msgs/msg/odometry.hpp>
 
 static const float PI = 3.14159265358979323846f;
 
@@ -30,9 +30,9 @@ class MapInfo
 		width = 800;
 		height = 800;
 	}
-	
 
-	MapInfo( const nav_msgs::OccupancyGridConstPtr& msg, std::string frame_id_ = "/map" )
+
+	MapInfo( const nav_msgs::msg::OccupancyGrid::SharedPtr& msg, std::string frame_id_ = "/map" )
 	{
 		resolution = msg->info.resolution;
 		offset[0] = -((int)msg->info.width) - (msg->info.origin.position.x / resolution);	// remember: horizontal mirroring!
@@ -42,7 +42,7 @@ class MapInfo
 		height = (int)msg->info.height;
 	}
 
-	MapInfo( const nav_msgs::OccupancyGrid& msg, std::string frame_id_ = "/map" )
+	MapInfo( const nav_msgs::msg::OccupancyGrid& msg, std::string frame_id_ = "/map" )
 	{
 		resolution = msg.info.resolution;
 		offset[0] = -((int)msg.info.width) - (msg.info.origin.position.x / resolution);	// remember: horizontal mirroring!
@@ -85,15 +85,15 @@ static FUNCTION_IS_NOT_USED double getYaw( const tf::Pose& p )
 	return rad2deg( atan2( y, -x ) );
 }
 
-static FUNCTION_IS_NOT_USED bool poseToMap( 
+static FUNCTION_IS_NOT_USED bool poseToMap(
 					   tf::TransformListener* tf,  const MapInfo& mapInfo,
-					   const nav_msgs::Odometry& odom, float* x,float*y, double* rotation_deg )
+					   const nav_msgs::msg::Odometry& odom, float* x,float*y, double* rotation_deg )
 {
 	try
 	{
 		tf::StampedTransform transform;
 		tf->lookupTransform( mapInfo.frame_id, odom.header.frame_id, ros::Time(0), transform );
-		
+
 		tf::Pose p;
 		p.setOrigin( tf::Vector3( odom.pose.pose.position.x, odom.pose.pose.position.y, odom.pose.pose.position.z ) );
 		p.setRotation( tf::Quaternion( odom.pose.pose.orientation.x, odom.pose.pose.orientation.y, odom.pose.pose.orientation.z, odom.pose.pose.orientation.w ) );
@@ -109,15 +109,15 @@ static FUNCTION_IS_NOT_USED bool poseToMap(
 		return true;
 	}
 	catch(tf::LookupException& ex) {
-		ROS_ERROR("No Transform available Error: %s\n", ex.what());
+		RCLCPP_ERROR("No Transform available Error: %s\n", ex.what());
 		return false;
 	}
 	catch(tf::ConnectivityException& ex) {
-		ROS_ERROR("Connectivity Error: %s\n", ex.what());
+		RCLCPP_ERROR("Connectivity Error: %s\n", ex.what());
 		return false;
 	}
 	catch(tf::ExtrapolationException& ex) {
-		ROS_ERROR("Extrapolation Error: %s\n", ex.what());
+		RCLCPP_ERROR("Extrapolation Error: %s\n", ex.what());
 		return false;
 	}
 

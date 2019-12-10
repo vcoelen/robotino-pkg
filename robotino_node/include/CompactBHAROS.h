@@ -8,35 +8,38 @@
 #ifndef COMPACTBHAROS_H_
 #define COMPACTBHAROS_H_
 
+#include <memory>
+
 #include "rec/robotino/api2/CompactBHA.h"
 
-#include <ros/ros.h>
-#include "robotino_msgs/BHAReadings.h"
-#include "robotino_msgs/SetBHAPressures.h"
+#include "rclcpp/rclcpp.hpp"
+#include "builtin_interfaces/msg/time.hpp"
+#include "robotino_msgs/msg/bha_readings.hpp"
+#include "robotino_msgs/msg/set_bha_pressures.hpp"
 
 class CompactBHAROS : public rec::robotino::api2::CompactBHA
 {
 public:
-	CompactBHAROS();
+	CompactBHAROS(std::shared_ptr<rclcpp::Node> node);
 	~CompactBHAROS();
 
-	void setTimeStamp(ros::Time stamp);
+	void setTimeStamp(builtin_interfaces::msg::Time stamp);
 
 private:
-	ros::NodeHandle nh_;
+	std::shared_ptr<rclcpp::Node> node_;
 
-	ros::Subscriber bha_sub_;
+	rclcpp::Subscription<robotino_msgs::msg::SetBHAPressures>::SharedPtr bha_sub_;
 
-	ros::Publisher bha_pub_;
+	rclcpp::Publisher<robotino_msgs::msg::BHAReadings>::SharedPtr bha_pub_;
 
-	robotino_msgs::BHAReadings bha_msg_;
+	robotino_msgs::msg::BHAReadings bha_msg_;
 
-	ros::Time stamp_;
+	builtin_interfaces::msg::Time stamp_;
 
 	void pressuresChangedEvent( const float* pressures, unsigned int size );
 	void cablepullChangedEvent( const float* cablepull, unsigned int size );
 
-	void setBHAPressuresCallback( const robotino_msgs::SetBHAPressuresConstPtr &msg);
+	void setBHAPressuresCallback( const robotino_msgs::msg::SetBHAPressures::SharedPtr msg);
 };
 
 #endif /* COMPACTBHAROS_H_ */

@@ -8,32 +8,34 @@
 #ifndef CAMERAROS_H_
 #define CAMERAROS_H_
 
+#include <memory>
+
 #include "rec/robotino/api2/Camera.h"
 
-#include <ros/ros.h>
-#include <sensor_msgs/Image.h>
-#include <sensor_msgs/CameraInfo.h>
+#include "rclcpp/rclcpp.hpp"
+#include <sensor_msgs/msg/image.hpp>
+#include <sensor_msgs/msg/camera_info.hpp>
 #include <image_transport/image_transport.h>
 
 class CameraROS : public rec::robotino::api2::Camera
 {
 public:
-	CameraROS();
+	CameraROS(std::shared_ptr<rclcpp::Node> node);
 	~CameraROS();
 
 	void setNumber( int number );
-	void setTimeStamp(ros::Time stamp);
+	void setTimeStamp(builtin_interfaces::msg::Time stamp);
 
 private:
-	ros::NodeHandle nh_;
+	std::shared_ptr<rclcpp::Node> node_;
 
 	image_transport::ImageTransport img_transport_;
 	image_transport::CameraPublisher streaming_pub_;
 
-	sensor_msgs::Image img_msg_;
-	sensor_msgs::CameraInfo cam_info_msg_;
+	sensor_msgs::msg::Image img_msg_;
+	sensor_msgs::msg::CameraInfo cam_info_msg_;
 
-	ros::Time stamp_;
+	builtin_interfaces::msg::Time stamp_;
 
 	void imageReceivedEvent(
 			const unsigned char* data,

@@ -8,26 +8,28 @@
 #ifndef POWERMANAGEMENTROS_H_
 #define POWERMANAGEMENTROS_H_
 
+#include <memory>
+
 #include "rec/robotino/api2/PowerManagement.h"
 
-#include <ros/ros.h>
-#include "robotino_msgs/PowerReadings.h"
+#include "rclcpp/rclcpp.hpp"
+#include "robotino_msgs/msg/power_readings.hpp"
 
 class PowerManagementROS: public rec::robotino::api2::PowerManagement
 {
 public:
-	PowerManagementROS();
+	PowerManagementROS(std::shared_ptr<rclcpp::Node> node);
 	~PowerManagementROS();
 
-	void setTimeStamp(ros::Time stamp);
+	void setTimeStamp(builtin_interfaces::msg::Time stamp);
 
 private:
-	ros::NodeHandle nh_;
-	ros::Publisher power_pub_;
+	std::shared_ptr<rclcpp::Node> node_;
+	rclcpp::Publisher<robotino_msgs::msg::PowerReadings>::SharedPtr power_pub_;
 
-	robotino_msgs::PowerReadings power_msg_;
+	robotino_msgs::msg::PowerReadings power_msg_;
 
-	ros::Time stamp_;
+	builtin_interfaces::msg::Time stamp_;
 
 	void readingsEvent(float current, float voltage);
 };

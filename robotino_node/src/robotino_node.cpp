@@ -6,16 +6,16 @@
  */
 
 
-#include <sensor_msgs/fill_image.h>
+//#include <sensor_msgs/msg/fill_image.h>
 
 #include "RobotinoNode.h"
 
-#include <ros/ros.h>
+#include "rclcpp/rclcpp.hpp"
 
 int main(int argc, char** argv)
 {
-	ros::init(argc, argv, "robotino_node");
-	RobotinoNode rn;
-	rn.spin();
+	rclcpp::init(argc, argv);
+	rclcpp::spin(std::make_shared<RobotinoNode>());
+
 	return 0;
 }

@@ -7,17 +7,17 @@
 
 #include "PowerManagementROS.h"
 
-PowerManagementROS::PowerManagementROS()
+PowerManagementROS::PowerManagementROS(std::shared_ptr<rclcpp::Node> node) : node_(node)
 {
-	power_pub_ = nh_.advertise<robotino_msgs::PowerReadings>("power_readings", 1, true);
+	power_pub_ = node_->create_publisher<robotino_msgs::msg::PowerReadings>("power_readings", 1); //removed latching TODO (vcoelen) has to be fixed
 }
 
 PowerManagementROS::~PowerManagementROS()
 {
-	power_pub_.shutdown();
+
 }
 
-void PowerManagementROS::setTimeStamp(ros::Time stamp)
+void PowerManagementROS::setTimeStamp(builtin_interfaces::msg::Time stamp)
 {
 	stamp_ = stamp;
 }
@@ -25,10 +25,10 @@ void PowerManagementROS::setTimeStamp(ros::Time stamp)
 void PowerManagementROS::readingsEvent(float current, float voltage)
 {
 	// Build the PowerReadings msg
-	power_msg_.stamp = ros::Time::now();
+	power_msg_.stamp = node_->now();
 	power_msg_.current = current;
 	power_msg_.voltage = voltage;
 
 	// Publish the msg
-	power_pub_.publish( power_msg_ );
+	power_pub_->publish( power_msg_ );
 }

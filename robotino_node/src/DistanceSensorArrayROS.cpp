@@ -8,17 +8,17 @@
 #include "DistanceSensorArrayROS.h"
 #include <cmath>
 
-DistanceSensorArrayROS::DistanceSensorArrayROS()
+DistanceSensorArrayROS::DistanceSensorArrayROS(std::shared_ptr<rclcpp::Node> node) : node_(node)
 {
-	distances_pub_ = nh_.advertise<sensor_msgs::PointCloud>("distance_sensors", 1, true);
+	distances_pub_ = node_->create_publisher<sensor_msgs::msg::PointCloud>("distance_sensors", 1); //removed latching TODO (vcoelen) has to be fixed
 }
 
 DistanceSensorArrayROS::~DistanceSensorArrayROS()
 {
-	distances_pub_.shutdown();
+
 }
 
-void DistanceSensorArrayROS::setTimeStamp(ros::Time stamp)
+void DistanceSensorArrayROS::setTimeStamp(builtin_interfaces::msg::Time stamp)
 {
 	stamp_ = stamp;
 }
@@ -40,5 +40,5 @@ void DistanceSensorArrayROS::distancesChangedEvent(const float* distances, unsig
 	}
 
 	// Publish the msg
-	distances_pub_.publish(distances_msg_);
+	distances_pub_->publish(distances_msg_);
 }

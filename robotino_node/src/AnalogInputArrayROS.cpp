@@ -7,17 +7,16 @@
 
 #include "AnalogInputArrayROS.h"
 
-AnalogInputArrayROS::AnalogInputArrayROS()
+AnalogInputArrayROS::AnalogInputArrayROS(std::shared_ptr<rclcpp::Node> node) : node_(node)
 {
-	analog_pub_ = nh_.advertise<robotino_msgs::AnalogReadings>("analog_readings", 1, true);
+	analog_pub_ = node_->create_publisher<robotino_msgs::msg::AnalogReadings>("analog_readings", 1); //removed latching TODO (vcoelen) has to be fixed
 }
 
 AnalogInputArrayROS::~AnalogInputArrayROS()
 {
-	analog_pub_.shutdown();
 }
 
-void AnalogInputArrayROS::setTimeStamp(ros::Time stamp)
+void AnalogInputArrayROS::setTimeStamp(builtin_interfaces::msg::Time stamp)
 {
 	stamp_ = stamp;
 }
@@ -33,6 +32,6 @@ void AnalogInputArrayROS::valuesChangedEvent( const float* values, unsigned int 
 		memcpy( analog_msg_.values.data(), values, size * sizeof( float ) );
 
 		// Publish the msg
-		analog_pub_.publish(analog_msg_);
+		analog_pub_->publish(analog_msg_);
 	}
 }

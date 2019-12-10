@@ -8,10 +8,12 @@
 #ifndef RobotinoCameraNode_H
 #define RobotinoCameraNode_H
 
+#include <memory>
+
 #include "ComROS.h"
 #include "CameraROS.h"
 
-#include <ros/ros.h>
+#include "rclcpp/rclcpp.hpp"
 
 class RobotinoCameraNode
 {
@@ -22,7 +24,7 @@ public:
 	bool spin();
 
 private:
-	ros::NodeHandle nh_;
+	std::shared_ptr<rclcpp::Node> node_;
 
 	std::string hostname_;
 	int cameraNumber_;

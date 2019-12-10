@@ -8,28 +8,30 @@
 #ifndef OMNIDRIVEROS_H_
 #define OMNIDRIVEROS_H_
 
+#include <memory>
+
 #include "rec/robotino/api2/OmniDrive.h"
 
-#include <ros/ros.h>
-#include <geometry_msgs/TwistStamped.h>
+#include "rclcpp/rclcpp.hpp"
+#include <geometry_msgs/msg/twist_stamped.hpp>
 
 class OmniDriveROS: public rec::robotino::api2::OmniDrive
 {
 public:
-	OmniDriveROS();
+	OmniDriveROS(std::shared_ptr<rclcpp::Node> node);
 	~OmniDriveROS();
 
 private:
-	ros::NodeHandle nh_;
+	std::shared_ptr<rclcpp::Node> node_;
 
-	ros::Subscriber cmd_vel_sub_;
+	rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_sub_;
 
 	double max_linear_vel_;
 	double min_linear_vel_;
 	double max_angular_vel_;
 	double min_angular_vel_;
 
-	void cmdVelCallback(const geometry_msgs::TwistConstPtr& msg);
+	void cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg);
 
 public:
 	void setMaxMin( double max_linear_vel, double min_linear_vel,

@@ -8,28 +8,30 @@
 #ifndef MOTORARRAYROS_H_
 #define MOTORARRAYROS_H_
 
+#include <memory>
+
 #include "rec/robotino/api2/MotorArray.h"
 
-#include <ros/ros.h>
-#include "robotino_msgs/MotorReadings.h"
+#include "rclcpp/rclcpp.hpp"
+#include "robotino_msgs/msg/motor_readings.hpp"
 
 class MotorArrayROS : public rec::robotino::api2::MotorArray
 {
 public:
-	MotorArrayROS();
+	MotorArrayROS(std::shared_ptr<rclcpp::Node> node);
 	~MotorArrayROS();
 
-	void setTimeStamp(ros::Time stamp);
+	void setTimeStamp(builtin_interfaces::msg::Time stamp);
 	void getMotorReadings(std::vector<float> &velocities, std::vector<int> &positions );
 
 private:
-	ros::NodeHandle nh_;
+	std::shared_ptr<rclcpp::Node> node_;
 
-	ros::Publisher motor_pub_;
+	rclcpp::Publisher<robotino_msgs::msg::MotorReadings>::SharedPtr motor_pub_;
 
-	robotino_msgs::MotorReadings motor_msg_;
+	robotino_msgs::msg::MotorReadings motor_msg_;
 
-	ros::Time stamp_;
+	builtin_interfaces::msg::Time stamp_;
 
 	void velocitiesChangedEvent( const float* velocities, unsigned int size );
 	void positionsChangedEvent( const float* positions, unsigned int size );

@@ -1,32 +1,34 @@
 #ifndef INITIALPOSEROS_H_
 #define INITIALPOSEROS_H_
 
+#include <memory>
+
 #include "rec/robotino/api2/InitialPose.h"
 #include "transform.h"
-#include <ros/ros.h>
-#include <geometry_msgs/PoseWithCovarianceStamped.h>
-#include <nav_msgs/OccupancyGrid.h>
-#include <nav_msgs/Odometry.h>
-#include <tf/transform_listener.h>
+#include "rclcpp/rclcpp.hpp"
+#include <geometry_msgs/msg/pose with_covariance_stamped.hpp>
+#include <nav_msgs/msg/occupancy_grid.hpp>
+#include <nav_msgs/msg/odometry.hpp>
+#include <tf/transform_listener.hpp>
 
 class InitialPoseROS: public rec::robotino::api2::InitialPose
 {
 public:
-	InitialPoseROS();
+	InitialPoseROS(std::shared_ptr<rclcpp::Node> node);
 	~InitialPoseROS();
 
 private:
-	ros::NodeHandle nh_;
+	std::shared_ptr<rclcpp::Node> node_;
 
-	ros::Subscriber map_sub_;
-	
-	ros::Publisher initialPose_pub_;
+	rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr map_sub_;
 
-	geometry_msgs::PoseWithCovarianceStamped initialPose_msg_;
+	rclcpp::Publisher<geometry_msgs::msg::PoseWithCovarianceStamped>::SharedPtr initialPose_pub_;
+
+	geometry_msgs::msg::PoseWithCovarianceStamped initialPose_msg_;
 
 	void initialPoseEvent(float x,float y,double r);
 
-	void mapCallback(const nav_msgs::OccupancyGrid& occupancyGrid);
+	void mapCallback(const nav_msgs::msg::OccupancyGrid::SharedPtr occupancyGrid);
 
 	MapInfo* mapInfo_;
 };

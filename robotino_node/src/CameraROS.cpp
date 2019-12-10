@@ -6,22 +6,18 @@
  */
 
 #include "CameraROS.h"
-#include <sensor_msgs/fill_image.h>
-
-namespace sensor_msgs
-{
-extern bool fillImage(Image &image, const std::string &encoding_arg, uint32_t rows_arg, uint32_t cols_arg, uint32_t step_arg, const void *data_arg);
-};
+#include <sensor_msgs/fill_image.hpp>
 
 
-CameraROS::CameraROS():
-	img_transport_(nh_)
+CameraROS::CameraROS(std::shared_ptr<rclcpp::Node> node) :
+	node_(node),
+	img_transport_(node_)
 {
 }
 
 CameraROS::~CameraROS()
 {
-	streaming_pub_.shutdown();
+
 }
 
 void CameraROS::setNumber( int number )
@@ -33,12 +29,12 @@ void CameraROS::setNumber( int number )
 	else
 		topic << "image_raw" << number;
 
-	streaming_pub_ = img_transport_.advertiseCamera(topic.str(), 1, false);
+	streaming_pub_ = img_transport_.advertiseCamera(topic.str(), 1); // removed latching=false TODO (vcoelen) has to be fixed
 
 	setCameraNumber( number );
 }
 
-void CameraROS::setTimeStamp(ros::Time stamp)
+void CameraROS::setTimeStamp(builtin_interfaces::msg::Time stamp)
 {
 	stamp_ = stamp;
 }

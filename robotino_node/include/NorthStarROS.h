@@ -8,27 +8,29 @@
 #ifndef NORTHSTARROS_H_
 #define NORTHSTARROS_H_
 
+#include <memory>
+
 #include "rec/robotino/api2/NorthStar.h"
 
-#include <ros/ros.h>
-#include "robotino_msgs/NorthStarReadings.h"
+#include "rclcpp/rclcpp.hpp"
+#include "robotino_msgs/msg/north_star_readings.hpp"
 
 class NorthStarROS : public rec::robotino::api2::NorthStar
 {
 public:
-	NorthStarROS();
+	NorthStarROS(std::shared_ptr<rclcpp::Node> node);
 	~NorthStarROS();
 
-	void setTimeStamp(ros::Time stamp);
+	void setTimeStamp(builtin_interfaces::msg::Time stamp);
 
 private:
-	ros::NodeHandle nh_;
+	std::shared_ptr<rclcpp::Node> node_;
 
-	ros::Publisher north_star_pub_;
+	rclcpp::Publisher<robotino_msgs::msg::NorthStarReadings>::SharedPtr north_star_pub_;
 
-	robotino_msgs::NorthStarReadings north_star_msg_;
+	robotino_msgs::msg::NorthStarReadings north_star_msg_;
 
-	ros::Time stamp_;
+	builtin_interfaces::msg::Time stamp_;
 
 	void readingsEvent( const rec::robotino::api2::NorthStarReadings& readings );
 };

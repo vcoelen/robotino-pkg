@@ -1,4 +1,4 @@
-<package>
+<package format="3">
   <name>robotino_node</name>
   <version>1.0.0</version>
   <description>
@@ -12,19 +12,16 @@ It also implements a few services.
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <build_depend>robotino_msgs</build_depend>
-  <build_depend>nav_msgs</build_depend>
-  <build_depend>tf</build_depend>
-  <build_depend>image_transport</build_depend>
-  <build_depend>pcl</build_depend>
-  <build_depend>pcl_ros</build_depend>
-
-  <run_depend>robotino_msgs</run_depend>
-  <run_depend>nav_msgs</run_depend>
-  <run_depend>tf</run_depend>
-  <run_depend>image_transport</run_depend>
-  <run_depend>pcl</run_depend>
-  <run_depend>pcl_ros</run_depend>
+  <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
+  <depend>robotino_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>tf2</depend>
+  <depend>tf2_ros</depend>
+  <depend>image_transport</depend>
+  <depend>pcl</depend>
+  <depend>pcl_ros</depend>
+  <depend>sensor_msgs</depend>
 
   <export>
       <build_type>ament_cmake</build_type>

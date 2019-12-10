@@ -8,40 +8,42 @@
 #ifndef KINECTROS_H_
 #define KINECTROS_H_
 
+#include <memory>
+
 #include "rec/robotino/api2/Kinect.h"
 
-#include <ros/ros.h>
+#include "rclcpp/rclcpp.hpp"
 #include <pcl_ros/point_cloud.h>
 #include <pcl/point_types.h>
 #include <Eigen/Geometry>
-#include <sensor_msgs/Image.h>
-#include <sensor_msgs/CameraInfo.h>
-#include <image_transport/image_transport.h>
+#include <sensor_msgs/msg/image.hpp>
+#include <sensor_msgs/msg/camera_info.hpp>
+#include <image_transport/image_transport.hpp>
 
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
 
 class KinectROS: public rec::robotino::api2::Kinect
 {
 public:
-	KinectROS();
+	KinectROS(std::shared_ptr<rclcpp::Node> node);
 	~KinectROS();
 
 	void setDownsample( bool downsample );
 	void setLeafSize( double leaf_size );
-	void setTimeStamp(ros::Time stamp);
+	void setTimeStamp(builtin_interfaces::msg::Time stamp);
 
 private:
-	ros::NodeHandle nh_;
+	std::shared_ptr<rclcpp::Node> node_;
 
-	ros::Publisher cloud_pub_;
+	rclcpp::Publisher<PointCloud>::SharedPtr cloud_pub_;
 
 	image_transport::ImageTransport img_transport_;
 	image_transport::CameraPublisher streaming_pub_;
 
-	sensor_msgs::Image img_msg_;
-	sensor_msgs::CameraInfo cam_info_msg_;
+	sensor_msgs::msg::Image img_msg_;
+	sensor_msgs::msg::CameraInfo cam_info_msg_;
 
-	ros::Time stamp_;
+	builtin_interfaces::msg::Time stamp_;
 
 	bool downsample_;
 	double leaf_size_;

@@ -5,27 +5,32 @@
  *      Author: indorewala@servicerobotics.eu
  */
 
+#include <cstring>
+
 #include "DigitalOutputArrayROS.h"
 
-DigitalOutputArrayROS::DigitalOutputArrayROS()
+using std::placeholders::_1;
+
+DigitalOutputArrayROS::DigitalOutputArrayROS(std::shared_ptr<rclcpp::Node> node) : node_(node)
 {
-	digital_sub_ = nh_.subscribe("set_digital_values", 1,
-			&DigitalOutputArrayROS::setDigitalValuesCallback, this);
+	digital_sub_ = node_->create_subscription<robotino_msgs::msg::DigitalReadings>("set_digital_values", 1,
+			std::bind(&DigitalOutputArrayROS::setDigitalValuesCallback, this, _1));
 }
 
 DigitalOutputArrayROS::~DigitalOutputArrayROS()
 {
-	digital_sub_.shutdown();
+
 }
 
-void DigitalOutputArrayROS::setDigitalValuesCallback( const robotino_msgs::DigitalReadingsConstPtr& msg)
+void DigitalOutputArrayROS::setDigitalValuesCallback( const robotino_msgs::msg::DigitalReadings::SharedPtr msg)
 {
 	int numValues = msg->values.size();
 	if( numValues > 0 )
 	{
 		bool values[numValues];
 
-		memcpy( values, msg->values.data(), numValues * sizeof(bool) );
+		//TODO (vcoelen)
+		//std::memcpy( values, msg->values.data(), numValues * sizeof(bool) );
 		//setValues( values, numValues );
 	}
 }

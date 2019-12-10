@@ -8,27 +8,29 @@
 #ifndef ANALOGINPUTARRAYROS_H_
 #define ANALOGINPUTARRAYROS_H_
 
+#include <memory>
+
 #include "rec/robotino/api2/AnalogInputArray.h"
 
-#include <ros/ros.h>
-#include "robotino_msgs/AnalogReadings.h"
+#include "rclcpp/rclcpp.hpp"
+#include "robotino_msgs/msg/analog_readings.hpp"
 
 class AnalogInputArrayROS: public rec::robotino::api2::AnalogInputArray
 {
 public:
-	AnalogInputArrayROS();
+	AnalogInputArrayROS(std::shared_ptr<rclcpp::Node> node);
 	~AnalogInputArrayROS();
 
-	void setTimeStamp(ros::Time stamp);
+	void setTimeStamp(builtin_interfaces::msg::Time stamp);
 
 private:
-	ros::NodeHandle nh_;
+	std::shared_ptr<rclcpp::Node> node_;
 
-	ros::Publisher analog_pub_;
+	rclcpp::Publisher<robotino_msgs::msg::AnalogReadings>::SharedPtr analog_pub_;
 
-	robotino_msgs::AnalogReadings analog_msg_;
+	robotino_msgs::msg::AnalogReadings analog_msg_;
 
-	ros::Time stamp_;
+	builtin_interfaces::msg::Time stamp_;
 
 	void valuesChangedEvent( const float* values, unsigned int size );
 

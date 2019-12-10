@@ -8,23 +8,25 @@
 #ifndef DIGITALOUTPUTARRAYROS_H_
 #define DIGITALOUTPUTARRAYROS_H_
 
+#include <memory>
+
 #include "rec/robotino/api2/DigitalOutputArray.h"
 
-#include <ros/ros.h>
-#include "robotino_msgs/DigitalReadings.h"
+#include "rclcpp/rclcpp.hpp"
+#include "robotino_msgs/msg/digital_readings.hpp"
 
 class DigitalOutputArrayROS: public rec::robotino::api2::DigitalOutputArray
 {
 public:
-	DigitalOutputArrayROS();
+	DigitalOutputArrayROS(std::shared_ptr<rclcpp::Node> node);
 	~DigitalOutputArrayROS();
 
 private:
-	ros::NodeHandle nh_;
+	std::shared_ptr<rclcpp::Node> node_;
 
-	ros::Subscriber digital_sub_;
+	rclcpp::Subscription<robotino_msgs::msg::DigitalReadings>::SharedPtr digital_sub_;
 
-	void setDigitalValuesCallback( const robotino_msgs::DigitalReadingsConstPtr& msg);
+	void setDigitalValuesCallback( const robotino_msgs::msg::DigitalReadings::SharedPtr msg);
 
 };
 

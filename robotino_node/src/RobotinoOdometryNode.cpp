@@ -37,7 +37,7 @@ bool RobotinoOdometryNode::spin()
 
 	while(nh_.ok())
 	{
-		ros::Time curr_time = ros::Time::now();
+		builtin_interfaces::msg::Time curr_time = node_->now();
 		odometry_.setTimeStamp(curr_time);
 
 		com_.processEvents();
@@ -46,4 +46,3 @@ bool RobotinoOdometryNode::spin()
 	}
 	return true;
 }
-

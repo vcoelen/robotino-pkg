@@ -7,34 +7,39 @@
 
 #include "ElectricalGripperROS.h"
 
-ElectricalGripperROS::ElectricalGripperROS()
+using std::placeholders::_1;
+using std::placeholders::_2;
+using std::placeholders::_3;
+
+ElectricalGripperROS::ElectricalGripperROS(std::shared_ptr<rclcpp::Node> node) : node_(node)
 {
-	gripper_pub_ = nh_.advertise<robotino_msgs::GripperState>("gripper_state", 1, true);
-	set_gripper_server_ = nh_.advertiseService("set_gripper_state",
-			&ElectricalGripperROS::setGripperStateCallback, this);
+	gripper_pub_ = node_->create_publisher<robotino_msgs::msg::GripperState>("gripper_state", 1); //removed latching TODO (vcoelen) has to be fixed
+	set_gripper_server_ = node_->create_service<robotino_msgs::srv::SetGripperState>("set_gripper_state",
+			std::bind(&ElectricalGripperROS::setGripperStateService, this, _1, _2, _3));
 }
 
 ElectricalGripperROS::~ElectricalGripperROS()
 {
-	gripper_pub_.shutdown();
-	set_gripper_server_.shutdown();
+
+
 }
 
-void ElectricalGripperROS::setTimeStamp(ros::Time stamp)
+void ElectricalGripperROS::setTimeStamp(builtin_interfaces::msg::Time stamp)
 {
 	stamp_ = stamp;
 }
 
-bool ElectricalGripperROS::setGripperStateCallback(
-		robotino_msgs::SetGripperState::Request &req,
-		robotino_msgs::SetGripperState::Response &res)
+void ElectricalGripperROS::setGripperStateService(
+	const std::shared_ptr<rmw_request_id_t> request_header,
+	const std::shared_ptr<robotino_msgs::srv::SetGripperState::Request> req,
+	const std::shared_ptr<robotino_msgs::srv::SetGripperState::Response> res)
 {
-	if( req.state )
+	RCLCPP_INFO(node_->get_logger(), "request gripper state : %s", req->state ? "true" : "false");
+	if( req->state )
 		open();
 	else
 		close();
 
-	return true;
 }
 
 void ElectricalGripperROS::stateChangedEvent( int state )
@@ -47,5 +52,5 @@ void ElectricalGripperROS::stateChangedEvent( int state )
 		gripper_msg_.state = false;
 
 	// Publish the msg
-	gripper_pub_.publish( gripper_msg_ );
+	gripper_pub_->publish( gripper_msg_ );
 }

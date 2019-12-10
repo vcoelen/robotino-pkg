@@ -8,10 +8,12 @@
 #ifndef ROBOTINOODOMETRYNODE_H_
 #define ROBOTINOODOMETRYNODE_H_
 
+#include <memory>
+
 #include "ComROS.h"
 #include "OdometryROS.h"
 
-#include <ros/ros.h>
+#include "rclcpp/rclcpp.hpp"
 
 class RobotinoOdometryNode
 {
@@ -22,7 +24,7 @@ public:
 	bool spin();
 
 private:
-	ros::NodeHandle nh_;
+	std::shared_ptr<rclcpp::Node> node_;
 
 	std::string hostname_;
 

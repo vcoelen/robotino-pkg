@@ -7,17 +7,17 @@
 
 #include "MotorArrayROS.h"
 
-MotorArrayROS::MotorArrayROS()
+MotorArrayROS::MotorArrayROS(std::shared_ptr<rclcpp::Node> node) : node_(node)
 {
-	motor_pub_ = nh_.advertise<robotino_msgs::MotorReadings>("motor_readings", 1, true);
+	motor_pub_ = node_->create_publisher<robotino_msgs::msg::MotorReadings>("motor_readings", 1); //removed latching TODO (vcoelen) has to be fixed
 }
 
 MotorArrayROS::~MotorArrayROS()
 {
-	motor_pub_.shutdown();
+
 }
 
-void MotorArrayROS::setTimeStamp(ros::Time stamp)
+void MotorArrayROS::setTimeStamp(builtin_interfaces::msg::Time stamp)
 {
 	stamp_ = stamp;
 }
@@ -62,5 +62,5 @@ void MotorArrayROS::currentsChangedEvent( const float* currents, unsigned int si
 	}
 
 	// Publish the msg
-	motor_pub_.publish( motor_msg_ );
+	motor_pub_->publish( motor_msg_ );
 }

@@ -5,32 +5,36 @@
  *      Author: indorewala@servicerobotics.eu
  */
 
+#include <cmath>
+
 #include "OmniDriveROS.h"
 
-OmniDriveROS::OmniDriveROS()
+using std::placeholders::_1;
+
+OmniDriveROS::OmniDriveROS(std::shared_ptr<rclcpp::Node> node) : node_(node)
 {
-	cmd_vel_sub_ = nh_.subscribe("cmd_vel", 1, &OmniDriveROS::cmdVelCallback, this);
+	cmd_vel_sub_ = node_->create_subscription<geometry_msgs::msg::Twist>("cmd_vel", 1, std::bind(&OmniDriveROS::cmdVelCallback, this, _1));
 }
 
 OmniDriveROS::~OmniDriveROS()
 {
-	cmd_vel_sub_.shutdown();
+
 }
 
-void OmniDriveROS::cmdVelCallback(const geometry_msgs::TwistConstPtr& msg)
+void OmniDriveROS::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg)
 {
 	double linear_x = msg->linear.x;
 	double linear_y = msg->linear.y;
 	double angular = msg->angular.z;
 
-	if ( fabs( linear_x ) > max_linear_vel_ )
+	if ( std::abs( linear_x ) > max_linear_vel_ )
 	{
 		if( linear_x > 0.0 )
 			linear_x = max_linear_vel_;
 		else
 			linear_x = -max_linear_vel_;
 	}
-	else if( fabs( linear_x ) <  min_linear_vel_ && fabs( linear_x ) > 0.0 )
+	else if( std::abs( linear_x ) <  min_linear_vel_ && std::abs( linear_x ) > 0.0 )
 	{
 		if( linear_x > 0.0 )
 			linear_x = min_linear_vel_;
@@ -38,14 +42,14 @@ void OmniDriveROS::cmdVelCallback(const geometry_msgs::TwistConstPtr& msg)
 			linear_x = -min_linear_vel_;
 	}
 
-	if ( fabs( linear_y ) > max_linear_vel_ )
+	if ( std::abs( linear_y ) > max_linear_vel_ )
 	{
 		if( linear_y > 0.0 )
 			linear_y = max_linear_vel_;
 		else
 			linear_y = -max_linear_vel_;
 	}
-	else if( fabs( linear_y ) <  min_linear_vel_ && fabs( linear_y ) > 0.0 )
+	else if( std::abs( linear_y ) <  min_linear_vel_ && std::abs( linear_y ) > 0.0 )
 	{
 		if( linear_y > 0.0 )
 			linear_y = min_linear_vel_;
@@ -53,14 +57,14 @@ void OmniDriveROS::cmdVelCallback(const geometry_msgs::TwistConstPtr& msg)
 			linear_y = -min_linear_vel_;
 	}
 
-	if ( fabs( angular ) > max_angular_vel_ )
+	if ( std::abs( angular ) > max_angular_vel_ )
 	{
 		if( angular > 0.0 )
 			angular = max_angular_vel_;
 		else
 			angular = -max_angular_vel_;
 	}
-	else if( fabs( angular ) <  min_angular_vel_ && fabs( angular ) > 0.0 )
+	else if( std::abs( angular ) <  min_angular_vel_ && std::abs( angular ) > 0.0 )
 	{
 		if( angular > 0.0 )
 			angular = min_angular_vel_;

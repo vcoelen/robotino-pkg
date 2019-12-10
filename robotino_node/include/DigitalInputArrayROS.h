@@ -8,27 +8,30 @@
 #ifndef DIGITALINPUTARRAYROS_H_
 #define DIGITALINPUTARRAYROS_H_
 
+#include <memory>
+
 #include "rec/robotino/api2/DigitalInputArray.h"
 
-#include <ros/ros.h>
-#include "robotino_msgs/DigitalReadings.h"
+#include "rclcpp/rclcpp.hpp"
+#include "robotino_msgs/msg/digital_readings.hpp"
+#include "builtin_interfaces/msg/time.hpp"
 
 class DigitalInputArrayROS: public rec::robotino::api2::DigitalInputArray
 {
 public:
-	DigitalInputArrayROS();
+	DigitalInputArrayROS(std::shared_ptr<rclcpp::Node> node);
 	~DigitalInputArrayROS();
 
-	void setTimeStamp(ros::Time stamp);
+	void setTimeStamp(builtin_interfaces::msg::Time stamp);
 
 private:
-	ros::NodeHandle nh_;
+	std::shared_ptr<rclcpp::Node> node_;
 
-	ros::Publisher digital_pub_;
+	rclcpp::Publisher<robotino_msgs::msg::DigitalReadings>::SharedPtr digital_pub_;
 
-	robotino_msgs::DigitalReadings digital_msg_;
+	robotino_msgs::msg::DigitalReadings digital_msg_;
 
-	ros::Time stamp_;
+	builtin_interfaces::msg::Time stamp_;
 
 	virtual void valuesChangedEvent(const int* values, unsigned int size);
 };

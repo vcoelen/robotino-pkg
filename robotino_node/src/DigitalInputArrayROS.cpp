@@ -7,17 +7,17 @@
 
 #include "DigitalInputArrayROS.h"
 
-DigitalInputArrayROS::DigitalInputArrayROS()
+DigitalInputArrayROS::DigitalInputArrayROS(std::shared_ptr<rclcpp::Node> node) : node_(node)
 {
-	digital_pub_ = nh_.advertise<robotino_msgs::DigitalReadings>("digital_readings", 1, true);
+	digital_pub_ = node_->create_publisher<robotino_msgs::msg::DigitalReadings>("digital_readings", 1); //removed latching TODO (vcoelen) has to be fixed
 }
 
 DigitalInputArrayROS::~DigitalInputArrayROS()
 {
-	digital_pub_.shutdown();
+
 }
 
-void DigitalInputArrayROS::setTimeStamp(ros::Time stamp)
+void DigitalInputArrayROS::setTimeStamp(builtin_interfaces::msg::Time stamp)
 {
 	stamp_ = stamp;
 }
@@ -36,7 +36,7 @@ void DigitalInputArrayROS::valuesChangedEvent(const int* values, unsigned int si
  		}
 
 		// Publish the msg
-		digital_pub_.publish( digital_msg_ );
+		digital_pub_->publish( digital_msg_ );
 	}
 
 }

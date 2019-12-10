@@ -1,18 +1,22 @@
 #include "NavGoalROS.h"
 
-NavGoalROS::NavGoalROS()
+#include <tf2/LinearMath/Quaternion.h>
+
+using std::placeholders::_1;
+
+NavGoalROS::NavGoalROS(std::shared_ptr<rclcpp::Node> node) : node_(node)
 {
-	navGoal_pub_ = nh_.advertise<geometry_msgs::PoseStamped>("move_base_simple/goal", 1, true);
+	navGoal_pub_ = node_->create_publisher<geometry_msgs::msg::PoseStamped>("move_base_simple/goal", 1); //removed latching TODO (vcoelen) has to be fixed
 
 	mapInfo_ = NULL;
-	map_sub_ = nh_.subscribe("map", 1, &NavGoalROS::mapCallback, this);
+	map_sub_ = node_->create_subscription<nav_msgs::msg::OccupancyGrid>("map", 1, std::bind(&NavGoalROS::mapCallback, this, _1));
 
 }
 
 NavGoalROS::~NavGoalROS()
 {
-	navGoal_pub_.shutdown();
-	map_sub_.shutdown();
+
+
 }
 
 void NavGoalROS:: navGoalEvent(float x,float y,double r)
@@ -23,27 +27,28 @@ void NavGoalROS:: navGoalEvent(float x,float y,double r)
 		navGoal_msg_.pose.position.y = ( mapInfo_->resolution * ( y + mapInfo_->offset[1] ) );
 
 		navGoal_msg_.pose.position.z = 0;
-	
+
 		double rot = deg2rad( r );
 		double rx = cos( rot );
 		double ry = sin( rot );
 		rot = atan2( ry, -rx );
 
-		tf::Quaternion q = tf::createQuaternionFromYaw( rot );
+		tf2::Quaternion q;
+	    quat.setRPY(0.0, 0.0, rot);
 		navGoal_msg_.pose.orientation.x = q.x();
-		navGoal_msg_.pose.orientation.y = q.y();	
+		navGoal_msg_.pose.orientation.y = q.y();
 		navGoal_msg_.pose.orientation.z = q.z();
 		navGoal_msg_.pose.orientation.w = q.w();
 
 		navGoal_msg_.header.frame_id = mapInfo_->frame_id;
-		navGoal_msg_.header.stamp = ros::Time::now();
+		navGoal_msg_.header.stamp = node_->now();
 
-		navGoal_pub_.publish(navGoal_msg_);
+		navGoal_pub_->publish(navGoal_msg_);
 
 	}
 }
 
-void NavGoalROS::mapCallback(const nav_msgs::OccupancyGrid& occupancyGrid)
+void NavGoalROS::mapCallback(const nav_msgs::msg::OccupancyGrid::SharedPtr occupancyGrid)
 {
 	if(mapInfo_)
 	{

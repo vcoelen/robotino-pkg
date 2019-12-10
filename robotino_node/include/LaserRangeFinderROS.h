@@ -8,29 +8,31 @@
 #ifndef LASERRANGEFINDERROS_H_
 #define LASERRANGEFINDERROS_H_
 
+#include <memory>
+
 #include "rec/robotino/api2/LaserRangeFinder.h"
 #include "rec/robotino/api2/LaserRangeFinderReadings.h"
 
-#include <ros/ros.h>
-#include <sensor_msgs/LaserScan.h>
+#include "rclcpp/rclcpp.hpp"
+#include <sensor_msgs/msg/laser_scan.hpp>
 
 class LaserRangeFinderROS: public rec::robotino::api2::LaserRangeFinder
 {
 public:
-	LaserRangeFinderROS();
+	LaserRangeFinderROS(std::shared_ptr<rclcpp::Node> node);
 	~LaserRangeFinderROS();
 
 	void setNumber( int number );
-	void setTimeStamp(ros::Time stamp);
+	void setTimeStamp(builtin_interfaces::msg::Time stamp);
 
 private:
-	ros::NodeHandle nh_;
+	std::shared_ptr<rclcpp::Node> node_;
 
-	ros::Publisher laser_scan_pub_;
+	rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr laser_scan_pub_;
 
-	sensor_msgs::LaserScan laser_scan_msg_;
+	sensor_msgs::msg::LaserScan laser_scan_msg_;
 
-	ros::Time stamp_;
+	builtin_interfaces::msg::Time stamp_;
 
 	void scanEvent(const rec::robotino::api2::LaserRangeFinderReadings &scan);
 };

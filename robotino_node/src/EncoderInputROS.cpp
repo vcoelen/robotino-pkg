@@ -7,20 +7,24 @@
 
 #include "EncoderInputROS.h"
 
-EncoderInputROS::EncoderInputROS()
+using std::placeholders::_1;
+using std::placeholders::_2;
+using std::placeholders::_3;
+
+EncoderInputROS::EncoderInputROS(std::shared_ptr<rclcpp::Node> node) : node_(node)
 {
-	encoder_pub_ = nh_.advertise<robotino_msgs::EncoderReadings>("encoder_readings", 1, true);
-	encoder_position_server_ = nh_.advertiseService("set_encoder_position",
-			&EncoderInputROS::setEncoderPositionCallback, this);
+	encoder_pub_ = node_->create_publisher<robotino_msgs::msg::EncoderReadings>("encoder_readings", 1); //removed latching TODO (vcoelen) has to be fixed
+	encoder_position_server_ = node_->create_service<robotino_msgs::srv::SetEncoderPosition>("set_encoder_position",
+			std::bind(&EncoderInputROS::setEncoderPositionService, this, _1, _2, _3));
 }
 
 EncoderInputROS::~EncoderInputROS()
 {
-	encoder_pub_.shutdown();
-	encoder_position_server_.shutdown();
+
+
 }
 
-void EncoderInputROS::setTimeStamp(ros::Time stamp)
+void EncoderInputROS::setTimeStamp(builtin_interfaces::msg::Time stamp)
 {
 	stamp_ = stamp;
 }
@@ -34,14 +38,15 @@ void EncoderInputROS::readingsChangedEvent( int velocity, int position, float cu
 	encoder_msg_.current = current;
 
 	// Publish the msg
-	encoder_pub_.publish( encoder_msg_ );
+	encoder_pub_->publish( encoder_msg_ );
 }
 
-bool EncoderInputROS::setEncoderPositionCallback(
-			robotino_msgs::SetEncoderPosition::Request& req,
-			robotino_msgs::SetEncoderPosition::Response& res)
+bool EncoderInputROS::setEncoderPositionService(
+	const std::shared_ptr<rmw_request_id_t> request_header,
+	const std::shared_ptr<robotino_msgs::srv::SetEncoderPosition::Request> req,
+	const std::shared_ptr<robotino_msgs::srv::SetEncoderPosition::Response> res)
 {
-	setPosition( req.position ,req.velocity );
-
-	return true;
+	(void)request_header;
+	RCLCPP_INFO(node_->get_logger(), "Request set encoder position and velocity");
+	setPosition( req->position ,req->velocity );
 }

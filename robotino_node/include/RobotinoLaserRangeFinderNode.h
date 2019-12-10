@@ -8,10 +8,12 @@
 #ifndef ROBOTINOLaserRangeFinderNODE_H_
 #define ROBOTINOLaserRangeFinderNODE_H_
 
+#include <memory>
+
 #include "ComROS.h"
 #include "LaserRangeFinderROS.h"
 
-#include <ros/ros.h>
+#include "rclcpp/rclcpp.hpp"
 
 class RobotinoLaserRangeFinderNode
 {
@@ -22,7 +24,7 @@ public:
 	bool spin();
 
 private:
-	ros::NodeHandle nh_;
+	std::shared_ptr<rclcpp::Node> node_;
 
 	std::string hostname_;
 	int laserRangeFinderNumber_;

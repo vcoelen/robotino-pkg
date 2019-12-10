@@ -8,27 +8,29 @@
 #ifndef DISTANCESENSORARRAYROS_H_
 #define DISTANCESENSORARRAYROS_H_
 
+#include <memory>
+
 #include "rec/robotino/api2/DistanceSensorArray.h"
 
-#include <ros/ros.h>
-#include <sensor_msgs/PointCloud.h>
+#include "rclcpp/rclcpp.hpp"
+#include <sensor_msgs/msg/point_cloud.hpp>
 
 class DistanceSensorArrayROS: public rec::robotino::api2::DistanceSensorArray
 {
 public:
-	DistanceSensorArrayROS();
+	DistanceSensorArrayROS(std::shared_ptr<rclcpp::Node> node);
 	~DistanceSensorArrayROS();
 
-	void setTimeStamp(ros::Time stamp);
+	void setTimeStamp(builtin_interfaces::msg::Time stamp);
 
 private:
-	ros::NodeHandle nh_;
+	std::shared_ptr<rclcpp::Node> node_;
 
-	ros::Publisher distances_pub_;
+	rclcpp::Publisher<sensor_msgs::msg::PointCloud>::SharedPtr distances_pub_;
 
-	sensor_msgs::PointCloud distances_msg_;
+	sensor_msgs::msg::PointCloud distances_msg_;
 
-	ros::Time stamp_;
+	builtin_interfaces::msg::Time stamp_;
 
 	void distancesChangedEvent(const float* distances, unsigned int size);
 
