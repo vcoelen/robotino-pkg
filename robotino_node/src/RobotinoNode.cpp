@@ -29,7 +29,7 @@ RobotinoNode::RobotinoNode() :
     omni_drive_(create_sub_node("")),
     power_management_(create_sub_node(""))
 {
-    std::string default_hostname = "192.168.10.2";
+    std::string default_hostname = "172.26.1.1";
     declare_parameter("hostname", default_hostname);
     get_parameter_or("hostname", hostname_, default_hostname);
 

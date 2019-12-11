@@ -13,7 +13,11 @@ Migration à ROS2 :
 
 `colcon build --packages-select robotino_msgs robotino_node robotino_teleop`
 
-Statut de la migration :
+* Utilisation :
+
+`ros2 launch robotino_node robotino_node_launch.py hostname:=IP_OF_ROBOTINO`
+
+* Statut de la migration :
 
 Compilation :
 - [x] robotino_msgs
@@ -37,14 +41,16 @@ Tests :
 
 - [x] robotino_msgs
 - [ ] robotino_node  
-    - [x] robotino_node (tested on robotino SIM)
-    - [x] robotino_odometry_node (tested on robotino SIM)
+    - [x] robotino_node (testé sur robotino SIM)
+    - [x] robotino_odometry_node (testé sur robotino SIM)
     - [ ] robotino_camera_node
     - [ ] robotino_laserrangefinder_node
+    - [ ] launchfiles (en cours, un exemple basique fourni)
 
 - [ ] robotino_teleop
     - [ ] joystick_teleop_node
     - [x] keyboard_teleop_node
+    - [ ] launchfiles
 
 - [ ] robotino_local_move
 - [ ] robotino_local_planner
