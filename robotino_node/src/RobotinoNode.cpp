@@ -14,63 +14,42 @@ using namespace std::chrono_literals;
 
 RobotinoNode::RobotinoNode() :
   	Node("robotino_node"),
-    analog_input_array_(this->shared_from_this()),
-    bumper_(this->shared_from_this()),
-    compact_bha_(this->shared_from_this()),
-    com_(this->shared_from_this()),
-    digital_input_array_(this->shared_from_this()),
-    digital_output_array_(this->shared_from_this()),
-    distance_sensor_array_(this->shared_from_this()),
-    electrical_gripper_(this->shared_from_this()),
-    encoder_input_(this->shared_from_this()),
-    grappler_(this->shared_from_this()),
-    motor_array_(this->shared_from_this()),
-    north_star_(this->shared_from_this()),
-    omni_drive_(this->shared_from_this()),
-    power_management_(this->shared_from_this())
+    analog_input_array_(create_sub_node("")),
+    bumper_(create_sub_node("")),
+    compact_bha_(create_sub_node("")),
+    com_(create_sub_node("")),
+    digital_input_array_(create_sub_node("")),
+    digital_output_array_(create_sub_node("")),
+    distance_sensor_array_(create_sub_node("")),
+    electrical_gripper_(create_sub_node("")),
+    encoder_input_(create_sub_node("")),
+    grappler_(create_sub_node("")),
+    motor_array_(create_sub_node("")),
+    north_star_(create_sub_node("")),
+    omni_drive_(create_sub_node("")),
+    power_management_(create_sub_node(""))
 {
-    declare_parameter("hostname", "IP address of the robot");
-    if(!get_parameter("hostname", hostname_))
-    {
-        hostname_ = "172.26.1.1";
-    }
+    std::string default_hostname = "192.168.10.2";
+    declare_parameter("hostname", default_hostname);
+    get_parameter_or("hostname", hostname_, default_hostname);
 
-    //TODO (vcoelen) description des paramètres
-    declare_parameter("max_linear_vel", "");
-    if(!get_parameter("max_linear_vel", max_linear_vel_))
-    {
-        max_linear_vel_ = 0.2;
-    }
+    declare_parameter("max_linear_vel", 0.2);
+    get_parameter_or("max_linear_vel", max_linear_vel_, 0.2);
 
-    declare_parameter("min_linear_vel", "");
-    if(!get_parameter("min_linear_vel", min_linear_vel_))
-    {
-        min_linear_vel_ = 0.05;
-    }
+    declare_parameter("min_linear_vel", 0.05);
+    get_parameter_or("min_linear_vel", min_linear_vel_, 0.05);
 
-    declare_parameter("max_angular_vel", "");
-    if(!get_parameter("max_angular_vel", max_angular_vel_))
-    {
-        max_angular_vel_ = 1.0;
-    }
+    declare_parameter("max_angular_vel", 1.0);
+    get_parameter_or("max_angular_vel", max_angular_vel_, 1.0);
 
-    declare_parameter("min_angular_vel", "");
-    if(!get_parameter("min_angular_vel", min_angular_vel_))
-    {
-        min_angular_vel_ = 0.1;
-    }
+    declare_parameter("min_angular_vel", 0.1);
+    get_parameter_or("min_angular_vel", min_angular_vel_, 0.1);
 
-    declare_parameter("downsample_kinect", "");
-    if(!get_parameter("downsample_kinect", downsample_kinect_))
-    {
-        downsample_kinect_ = true;
-    }
+    declare_parameter("downsample_kinect", true);
+    get_parameter_or("downsample_kinect", downsample_kinect_, true);
 
-    declare_parameter("leaf_size_kinect", "");
-    if(!get_parameter("leaf_size_kinect", leaf_size_kinect_))
-    {
-        leaf_size_kinect_ = 0.05;
-    }
+    declare_parameter("leaf_size_kinect", 0.05);
+    get_parameter_or("leaf_size_kinect", leaf_size_kinect_, 0.05);
 
 	distances_clearing_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud>("/distance_sensors_clearing", 1); //removed latching TODO (vcoelen) has to be fixed
 	joint_states_pub_= this->create_publisher<sensor_msgs::msg::JointState>("/robotino_joint_states", 1); // removed latching=false TODO (vcoelen) has to be fixed

@@ -37,8 +37,8 @@ Tests :
 
 - [x] robotino_msgs
 - [ ] robotino_node  
-    - [ ] robotino_node
-    - [x] robotino_odometry_node
+    - [x] robotino_node (tested on robotino SIM)
+    - [x] robotino_odometry_node (tested on robotino SIM)
     - [ ] robotino_camera_node
     - [ ] robotino_laserrangefinder_node
 

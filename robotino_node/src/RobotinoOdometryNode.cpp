@@ -16,11 +16,10 @@ RobotinoOdometryNode::RobotinoOdometryNode() :
 	com_(create_sub_node("")),
 	odometry_(create_sub_node(""))
 {
-	declare_parameter("hostname", "192.168.10.2");
-    if(!get_parameter("hostname", hostname_))
-    {
-        hostname_ = "192.168.10.2";
-    }
+    std::string default_hostname = "192.168.10.2";
+    declare_parameter("hostname", default_hostname);
+    get_parameter_or("hostname", hostname_, default_hostname);
+
 	com_.setName( "Odometry" );
 
 	initModules();
