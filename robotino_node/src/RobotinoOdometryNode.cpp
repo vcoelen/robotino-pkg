@@ -13,13 +13,13 @@ using namespace std::chrono_literals;
 
 RobotinoOdometryNode::RobotinoOdometryNode() :
  	Node("robotino_odometry_node"),
-	com_(this->shared_from_this()),
-	odometry_(this->shared_from_this())
+	com_(create_sub_node("")),
+	odometry_(create_sub_node(""))
 {
-	declare_parameter("hostname", "IP address of the robot");
+	declare_parameter("hostname", "192.168.10.2");
     if(!get_parameter("hostname", hostname_))
     {
-        hostname_ = "172.26.1.1";
+        hostname_ = "192.168.10.2";
     }
 	com_.setName( "Odometry" );
 

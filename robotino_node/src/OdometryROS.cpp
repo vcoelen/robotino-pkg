@@ -21,7 +21,7 @@ OdometryROS::OdometryROS(std::shared_ptr<rclcpp::Node> node) : node_(node)
 	reset_odometry_server_ = node_->create_service<robotino_msgs::srv::ResetOdometry>("reset_odometry",
 			std::bind(&OdometryROS::resetOdometryService, this, _1, _2, _3));
 
-	std::make_shared<tf2_ros::TransformBroadcaster>(node_);
+	 odometry_transform_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(node_);
 }
 
 OdometryROS::~OdometryROS()
