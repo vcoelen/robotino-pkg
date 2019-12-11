@@ -31,7 +31,7 @@ JoystickTeleop::~JoystickTeleop()
 void JoystickTeleop::readParams()
 {
 
-	declare_parameter("axis_linear_x", 19);
+	declare_parameter("axis_linear_x", 1);
     if(!get_parameter("axis_linear_x", axis_linear_x_))
     {
  		axis_linear_x_ = 1;

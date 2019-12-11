@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 3.5)
 project(robotino_teleop)
 
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 14)
+  set(CMAKE_CXX_STANDARD 17)
+  # c++17 because I wanted to remove dependency to boost
+  # std::scoped_lock is not available before c++17
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -45,27 +47,27 @@ target_link_libraries(
     ${REC_ROBOTINO_API2_LIBRARY}
 )
 
-# add_executable(
-# 	keyboard_teleop_node
-# 	src/keyboard_teleop_node.cpp
-# 	src/KeyboardTeleop.cpp
-# )
-#
-# ament_target_dependencies(keyboard_teleop_node
-#     rclcpp
-#     geometry_msgs
-#     sensor_msgs
-#     robotino_node
-# )
-#
-# target_link_libraries(
-#     keyboard_teleop_node
-#     ${REC_ROBOTINO_API2_LIBRARY}
-# )
+add_executable(
+	keyboard_teleop_node
+	src/keyboard_teleop_node.cpp
+	src/KeyboardTeleop.cpp
+)
+
+ament_target_dependencies(keyboard_teleop_node
+    rclcpp
+    geometry_msgs
+    sensor_msgs
+    robotino_node
+)
+
+target_link_libraries(
+    keyboard_teleop_node
+    ${REC_ROBOTINO_API2_LIBRARY}
+)
 
 install(TARGETS
     joystick_teleop_node
-    # keyboard_teleop_node
+    keyboard_teleop_node
     DESTINATION lib/${PROJECT_NAME}
 )
 

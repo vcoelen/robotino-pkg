@@ -12,11 +12,14 @@
 #ifndef KEYBOARDTELEOP_H_
 #define KEYBOARDTELEOP_H_
 
-#include <ros/ros.h>
-#include <geometry_msgs/Twist.h>
-
 #include <termios.h>
-#include "boost/thread/mutex.hpp"
+#include <mutex>
+
+#include "rclcpp/rclcpp.hpp"
+#include "rclcpp/time.hpp"
+#include "rclcpp/clock.hpp"
+#include <geometry_msgs/msg/twist.hpp>
+
 
 #define KEYCODE_Z 0x7A
 #define KEYCODE_Q 0x71
@@ -25,36 +28,38 @@
 
 #define KEYCODE_A 0x61
 #define KEYCODE_E 0x65
- 
+
 #define KEYCODE_W 0x77
 
 #define KEYCODE_SPACE 0x20
 
-class KeyboardTeleop
+class KeyboardTeleop : public rclcpp::Node
 {
 public:
 	KeyboardTeleop( struct termios &cooked, struct termios &raw, int &kfd );
 	~KeyboardTeleop();
 
 private:
-	ros::NodeHandle nh_;
-	ros::Publisher cmd_vel_pub_;
-	ros::Time first_publish_, last_publish_;
+	rclcpp::Clock wall_clock_;
+	rclcpp::TimerBase::SharedPtr timer_watchdog_;
 
-	geometry_msgs::Twist cmd_vel_msg_;
+	rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub_;
+	rclcpp::Time first_publish_, last_publish_;
+
+	geometry_msgs::msg::Twist cmd_vel_msg_;
 
 	double scale_linear_, scale_angular_;
 	struct termios cooked_, raw_;
 	int kfd_;
 
-	boost::mutex publish_mutex_;
+	std::mutex publish_mutex_;
 
-	void readParams( ros::NodeHandle n );
+	void readParams();
 	void publish( double vel_x, double vel_y, double vel_omega );
 
+	void watchdog();
 public:
 	void spin();
-	void watchdog();
 };
 
 

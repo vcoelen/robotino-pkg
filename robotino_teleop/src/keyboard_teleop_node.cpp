@@ -10,12 +10,12 @@
 #include <termios.h>
 #include <signal.h>
 
-#include "boost/thread/thread.hpp"
+#include <thread>
 
 int kfd = 0;
 struct termios cooked, raw;
 
-#include <ros/ros.h>
+#include "rclcpp/rclcpp.hpp"
 
 void quit(int sig)
 {
@@ -25,21 +25,17 @@ void quit(int sig)
 
 int main( int argc, char** argv )
 {
-	ros::init( argc, argv, "keyboard_teleop_node" );
-	ros::NodeHandle n;
+	rclcpp::init(argc, argv);
 
 	signal(SIGINT,quit);
 
-	KeyboardTeleop kt( cooked, raw, kfd );
+	std::shared_ptr<KeyboardTeleop> kt = std::make_shared<KeyboardTeleop>(cooked, raw, kfd);
 
-	boost::thread my_thread(boost::bind(&KeyboardTeleop::spin, &kt));
-	ros::Timer timer =
-			n.createTimer(ros::Duration(0.1), boost::bind(&KeyboardTeleop::watchdog, &kt));
+	std::thread kt_thread(std::bind(&KeyboardTeleop::spin, kt));
+	rclcpp::spin(kt);
 
-	ros::spin();
-
-	my_thread.interrupt();
-	my_thread.join();
+	kt_thread.join();
+	rclcpp::shutdown();
 
 	return 0;
 }

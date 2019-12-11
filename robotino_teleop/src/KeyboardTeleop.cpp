@@ -5,27 +5,44 @@
  *      Author: indorewala@servicerobotics.eu
  */
 
+#include <chrono>
+#include <mutex>
+#include <unistd.h>
+
+#include "rclcpp/duration.hpp"
+
 #include "KeyboardTeleop.h"
 
+using namespace std::chrono_literals;
+
 KeyboardTeleop::KeyboardTeleop( struct termios &cooked, struct termios &raw, int &kfd ):
-	nh_("~"),
+	Node("keyboard_teleop_node"),
+	wall_clock_(RCL_STEADY_TIME),
 	cooked_( cooked ),
 	raw_( raw ),
 	kfd_ ( kfd )
 {
-	cmd_vel_pub_ = nh_.advertise<geometry_msgs::Twist>("/cmd_vel", 1, true);
-	readParams(nh_);
+	cmd_vel_pub_ = create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 1); //TODO (vcoelen) removed latching add QoS
+	readParams();
+
+	first_publish_ = wall_clock_.now();
+	last_publish_ = wall_clock_.now();
+
+	timer_watchdog_ = this->create_wall_timer(100ms, std::bind(&KeyboardTeleop::watchdog, this));
+
 }
 
 KeyboardTeleop::~KeyboardTeleop()
 {
-	cmd_vel_pub_.shutdown();
 }
 
-void KeyboardTeleop::readParams( ros::NodeHandle n )
+void KeyboardTeleop::readParams()
 {
-	n.param<double>("scale_linear", scale_linear_, 1.0);
-	n.param<double>("scale_angular", scale_angular_, 1.0);
+	declare_parameter("scale_linear", 1.0);
+    get_parameter_or("scale_linear", scale_linear_, 1.0);
+
+	declare_parameter("scale_angular", 1.0);
+    get_parameter_or("scale_angular", scale_angular_, 1.0);
 }
 
 void KeyboardTeleop::publish( double vel_x, double vel_y, double vel_omega )
@@ -34,7 +51,7 @@ void KeyboardTeleop::publish( double vel_x, double vel_y, double vel_omega )
 	cmd_vel_msg_.linear.y  	= scale_linear_ * vel_y;
 	cmd_vel_msg_.angular.z 	= scale_angular_ * vel_omega;
 
-	cmd_vel_pub_.publish( cmd_vel_msg_ );
+	cmd_vel_pub_->publish( cmd_vel_msg_ );
 }
 
 void KeyboardTeleop::spin()
@@ -59,7 +76,7 @@ void KeyboardTeleop::spin()
 
 	puts("Press 'Space' to STOP");
 
-	while( ros::ok() )
+	while(rclcpp::ok())
 	{
 		vel_x = 0.0;
 		vel_y = 0.0;
@@ -102,12 +119,12 @@ void KeyboardTeleop::spin()
 			break;
 		}
 
-		boost::mutex::scoped_lock lock(publish_mutex_);
-		if (ros::Time::now() > last_publish_ + ros::Duration(1.0))
+		std::scoped_lock lock(publish_mutex_);
+		if (wall_clock_.now() > last_publish_ + rclcpp::Duration(1000s))
 		{
-			first_publish_ = ros::Time::now();
+			first_publish_ = wall_clock_.now();
 		}
-		last_publish_ = ros::Time::now();
+		last_publish_ = wall_clock_.now();
 		publish( vel_x, vel_y, vel_omega );
 	}
 	return;
@@ -115,8 +132,8 @@ void KeyboardTeleop::spin()
 
 void KeyboardTeleop::watchdog()
 {
-	boost::mutex::scoped_lock lock( publish_mutex_ );
-	if ((ros::Time::now() > last_publish_ + ros::Duration(0.15)) &&
-			(ros::Time::now() > first_publish_ + ros::Duration(0.50)))
+	std::scoped_lock lock( publish_mutex_ );
+	if ((wall_clock_.now() > last_publish_ + rclcpp::Duration(150ms)) &&
+			(wall_clock_.now() > first_publish_ + rclcpp::Duration(500ms)))
 		publish(0.0, 0.0, 0.0);
 }
