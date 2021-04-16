@@ -9,6 +9,7 @@ find_package(Eigen REQUIRED)
 set(
   CMAKE_MODULE_PATH
   /opt/robotino/cmake
+  /usr/local/robotino/api2/cmake
 )
 find_package(RobotinoAPI2 REQUIRED)
 

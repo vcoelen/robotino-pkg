@@ -7,6 +7,7 @@ find_package(catkin REQUIRED COMPONENTS roscpp roslib robotino_node)
 set(
   CMAKE_MODULE_PATH
   /opt/robotino/cmake
+  /usr/local/robotino/api2/cmake
 )
 find_package(RobotinoAPI2 REQUIRED)
 

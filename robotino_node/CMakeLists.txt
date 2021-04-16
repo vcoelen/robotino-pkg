@@ -12,6 +12,7 @@ geometry_msgs std_msgs message_generation roscpp roslib OpenCV cv_bridge tf imag
 set(
   CMAKE_MODULE_PATH
   /opt/robotino/cmake
+  /usr/local/robotino/api2/cmake
 )
 find_package(RobotinoAPI2 REQUIRED)
 
